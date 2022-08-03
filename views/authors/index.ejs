@@ -1,0 +1,25 @@
+<h3 class="page-header">Search Authors (from views/authors/index.ejs)</h3>
+<form action="/authors" method="GET">
+  <div class="form-row">
+    <div class="form-item">
+      <label>Name</label>
+      <input type="text" name="name" value="<%= searchOptions.name %> " />
+    </div>
+  </div>
+  <div class="form-row form-row-end">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </div>
+</form>
+<br />
+<!-- <% console.log(authors.length) %> -->
+<!-- author is an array of objects of the form 
+{_id: new ObjectId("62ea0...."),name: 'Laeek Ahmed',__v: 0} -->
+<% let arr1 = [] %> <% authors.forEach(author => { %>
+<div class="author-row">
+  <% if (arr1.includes((author.name))==false) {%>
+  <div class="author-name">
+    <%= author.name %><% arr1.push(author.name) %> <% console.log(arr1) %>
+  </div>
+  <% } %>
+</div>
+<% }) %>
