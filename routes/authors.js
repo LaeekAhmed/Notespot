@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Author = require("../models/author"); //db file
 
-//all/search authors route
+// all/search authors route, async func makes working wiht mongoose easier
 router.get("/", async (req, res) => {
   let searchOptions = {};
   // req.query instead of req.body since this is a get NOT post action;
@@ -29,11 +29,14 @@ router.get("/new", (req, res) => {
 
 // Create Author Route
 router.post("/", async (req, res) => {
+  // new entry "author" into table "Author"
   const author = new Author({
     name: req.body.name,
   });
   try {
     const newAuthor = await author.save();
+    console.log("1",author)
+    console.log("2",newAuthor)
     // res.redirect(`authors/${newAuthor.id}`);
     res.redirect("authors");
   } catch {

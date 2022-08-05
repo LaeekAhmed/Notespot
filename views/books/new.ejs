@@ -1,0 +1,9 @@
+<h2 class="page-header">New Book</h2>
+<!-- allows us to work with multipart forms (file-form) -->
+<form action="/books" method="POST" enctype="multipart/form-data">
+  <%- include('_form_fields') %>
+  <div class="form-row form-row-end btn-row">
+    <a class="btn btn-danger" href="/books">Cancel</a>
+    <button class="btn btn-primary" type="submit">Create</button>
+  </div>
+</form>

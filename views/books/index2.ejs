@@ -1,0 +1,25 @@
+<h3 class="page-header">Search books (from views/books/index.ejs)</h3>
+<form action="/books" method="GET">
+  <div class="form-row">
+    <div class="form-item">
+      <label>Doc Name</label>
+      <input type="text" name="title" value="<%= searchOptions.title %> " />
+    </div>
+  </div>
+  <div class="form-row form-row-end">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </div>
+</form>
+<br />
+<!-- <% console.log("books.length : ",books.length) %> -->
+<!-- book is an array of objects of the form 
+{_id: new ObjectId("62ea0...."),title: 'Maths',.........,__v: 0} -->
+<% let arr1 = [] %> <% books.forEach(book => { %>
+<div class="book-row">
+  <% if (arr1.includes((book.title))==false) {%>
+  <div class="book-name">
+    <%= book.title %><% arr1.push(book.title) %> <% console.log(arr1) %>
+  </div>
+  <% } %>
+</div>
+<% }) %>
