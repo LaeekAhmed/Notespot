@@ -4,21 +4,9 @@ const Book = require("../models/book"); //import db file
 const Author = require("../models/author"); //import db file
 
 /* import/methods to deal with cover image:
-firstly we need to create the image file in the folder after the user uploads it,then get the name and save it */
-
-const multer = require('multer') //allows us to work with multipart forms (file-form)
-const path = require('path') //built-in library
+firstly we need to create the image file in the folder after the user uploads it,then get the name and save it
+removed now */
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif'] //accepted image-type list
-const uploadPath = path.join('public',Book.coverImageBasePath) //'public/uploads/bookCovers'
-const fs = require('fs') // filesys -> to delete book covers created while no new entry for book was created due to error
-//func to create file and place it in the dest folder.
-const upload = multer({
-    dest : uploadPath,
-    fileFilter: (req,file,callback) => {
-      callback(null,imageMimeTypes.includes(file.mimetype)) //checking if the user-provided file is in the accepted image type.
-    }
-
-})
 
 // all-search books route
 router.get("/", async (req, res) => {
@@ -58,30 +46,22 @@ router.get("/new", async (req, res) => {
 });
 
 // Create book Route
-router.post("/",upload.single('cover'),async (req, res) => {
-  // req.file is the uploaded file.
-  const fileName = req.file != null ? req.file.filename : null
+router.post("/",async (req, res) => {
   // new entry "book" into table "Book"
   const book = new Book({
     title : req.body.title,
     author : req.body.author,
     publish_date : req.body.publishDate, // converting from string
     pageCount : req.body.pageCount,
-    coverImageName: fileName,
     description : req.body.description
     });
-  const author = await Author.find({});
+    saveCover(book,req.body.cover)
   try {
     const newBook = await book.save();
     // res.redirect(`authors/${newAuthor.id}`);
-    console.log(book)
     res.redirect("books");
     // if error occurs new.ejs will be reloaded without erasing the typed values.
   } catch {
-    if(fileName!= null){
-      removeBookCover(fileName)
-      console.log('Error ; No cover added,required fields are empty!')
-    }
     renderNewPage(res,book,true)
   }
 });
@@ -103,10 +83,15 @@ async function renderNewPage(res, book,hasError = false) {
   }
 }
 
-function removeBookCover(fileName){
-  fs.unlink(path.join(uploadPath,fileName),err => {
-    if(err) console.error('error unlinking cover : ',err)
-  })
+
+function saveCover(book, coverEncoded) {
+  if (coverEncoded == null) return
+  const cover = JSON.parse(coverEncoded)
+  if (cover != null && imageMimeTypes.includes(cover.type)) {
+    console.log('cover.data length : ',cover.data.length)
+    book.coverImage = new Buffer.from(cover.data,'base64')
+    book.coverImageType = cover.type
+  }
 }
 
 module.exports = router;

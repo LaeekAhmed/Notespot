@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Author = require("../models/author"); //db file
 
-// all/search authors route, async func makes working wiht mongoose easier
+// all/search authors route, async func makes working wiht mongoose easier/await feature
 router.get("/", async (req, res) => {
   let searchOptions = {};
   // req.query instead of req.body since this is a get NOT post action;
