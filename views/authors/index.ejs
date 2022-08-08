@@ -20,6 +20,12 @@
   <div class="author-name">
     <%= author.name %><% arr1.push(author.name) %> <% console.log(arr1) %>
   </div>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="/authors/<%= author.id %>">View</a>
+    <a class="btn btn-primary" href="/authors/<%= author.id %>/edit">Edit</a>
+    <%- include('../partials/deleteForm',
+                { url: `/authors/${author.id}` }) %>
+  </div>
   <% } %>
 </div>
 <% }) %>

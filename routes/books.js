@@ -2,11 +2,24 @@ const express = require("express");
 const router = express.Router();
 const Book = require("../models/book"); //import db file
 const Author = require("../models/author"); //import db file
+const PDFJS = require("pdfjs")
 
 /* import/methods to deal with cover image:
-firstly we need to create the image file in the folder after the user uploads it,then get the name and save it
-removed now */
+firstly we need to create the image file in the folder after the user uploads it,then get the name and save it */
+
+const multer = require('multer') //allows us to work with multipart forms (file-form)
+const path = require('path') //built-in library
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif'] //accepted image-type list
+const uploadPath = path.join('public','pdfs') //'public/uploads/bookCovers'
+const fs = require('fs') // filesys -> to delete book covers created while no new entry for book was created due to error
+//func to create file and place it in the dest folder.
+const upload = multer({
+    dest : uploadPath,
+    fileFilter: (req,file,callback) => {
+      callback(null,imageMimeTypes.includes(file.mimetype)) //checking if the user-provided file is in the accepted image type.
+    }
+
+})
 
 // all-search books route
 router.get("/", async (req, res) => {
@@ -46,7 +59,9 @@ router.get("/new", async (req, res) => {
 });
 
 // Create book Route
-router.post("/",async (req, res) => {
+router.post("/",upload.single('cover'),async (req, res) => {
+  // req.file is the uploaded file.
+  const fileName = req.file != null ? req.file.filename : null
   // new entry "book" into table "Book"
   const book = new Book({
     title : req.body.title,
@@ -54,17 +69,17 @@ router.post("/",async (req, res) => {
     publish_date : req.body.publishDate, // converting from string
     pageCount : req.body.pageCount,
     description : req.body.description
-    });
-    saveCover(book,req.body.cover)
+  })
+  saveCover(book, req.body.cover)
+  savePdf(book, req.body.pdf)
+
   try {
-    const newBook = await book.save();
-    // res.redirect(`authors/${newAuthor.id}`);
-    res.redirect("books");
-    // if error occurs new.ejs will be reloaded without erasing the typed values.
+    const newBook = await book.save()
+    //res.redirect(`books/${newBook.id}`)
   } catch {
-    renderNewPage(res,book,true)
+    renderNewPage(res, book, true)
   }
-});
+})
 
 async function renderNewPage(res, book,hasError = false) {
   try {
@@ -88,10 +103,31 @@ function saveCover(book, coverEncoded) {
   if (coverEncoded == null) return
   const cover = JSON.parse(coverEncoded)
   if (cover != null && imageMimeTypes.includes(cover.type)) {
-    console.log('cover.data length : ',cover.data.length)
-    book.coverImage = new Buffer.from(cover.data,'base64')
+    book.coverImage = new Buffer.from(cover.data, 'base64')
     book.coverImageType = cover.type
   }
+}
+
+function savePdf(book, coverEncoded) {
+  if (coverEncoded == null) return
+  const pdf = JSON.parse(coverEncoded)
+  if (pdf != null) {
+    book.Doc = new Buffer.from(pdf.data, 'base64')
+    book.DocType = pdf.type
+    console.log('Doc : ',book.DocType,pdf.data.length)
+  }
+}
+
+function openBase64InNewTab (data, mimeType) {
+  var byteCharacters = atob(data);
+  var byteNumbers = new Array(byteCharacters.length);
+  for (var i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  var byteArray = new Uint8Array(byteNumbers);
+  var file = new Blob([byteArray], { type: mimeType + ';base64' });
+  var fileURL = URL.createObjectURL(file);
+  window.open(fileURL);
 }
 
 module.exports = router;

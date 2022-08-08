@@ -21,11 +21,20 @@
   </div>
 </form>
 <br>
+<div>
+  
+</div>
 <% console.log("books.length = ",books.length) %> 
 <div>
     <% books.forEach(book => { %>
-        <img height='150' width="100" src="<%= book.coverImagePath %> " alt="">
+      <% if(book.title == 'test4'){%>
+        <iframe src="<%=book.DocPath  %>#view=FitH" frameborder="0" height='150' width="400"></iframe>
+        <a href="<%= book.coverImagePath %>" target="_blank" ><img height='150' width="100" src="<%= book.coverImagePath %> " alt="image embedded using base64 encoding!"></a>
         <%= book.title %> 
-        <%// console.log(book.coverImagePath) %> 
+        <%// console.log(book.coverImagePath) %>
+      <% } else { %>
+        <img height='150' width="100" src="<%= book.coverImagePath %> " alt=""></a>
+        <%= book.title %> 
+      <% } %> 
     <% }) %>   
 </div>
