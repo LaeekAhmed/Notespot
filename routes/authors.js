@@ -100,6 +100,7 @@ router.put('/:id', async (req, res) => {
 
 
 router.delete('/:id', async (req, res) => {
+  const books = await Book.find({ author: req.params.id })
   let author
   try {
     author = await Author.findById(req.params.id)
@@ -110,7 +111,8 @@ router.delete('/:id', async (req, res) => {
       res.redirect('/')
     // if author has book linked;
     } else {
-      res.redirect(`/authors/${author.id}`)
+      res.render(`authors/show`,
+      {author: author,booksByAuthor: books,errorMessage: 'Author has Linked books!'})
     }
   }
 })

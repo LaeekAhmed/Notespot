@@ -1,12 +1,12 @@
 <h2 class="page-header">Search Book</h2>
-<form action="/books" method="GET">
+<form action="/books" method="GET" style="padding: 15px">
   <div class="form-row">
     <div class="form-item">
       <label>Title</label>
       <input type="text" name="title" value="<%= searchOptions.title %>">
     </div>
   </div>
-  <div class="form-row">
+  <div class="form-row" style="padding: 15px">
     <div class="form-item">
       <label>Published After</label>
       <input type="date" name="publishedAfter" value="<%= searchOptions.publishedAfter %>">
@@ -24,17 +24,10 @@
 <div>
   
 </div>
-<% console.log("books.length = ",books.length) %> 
-<div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
     <% books.forEach(book => { %>
-      <% if(book.title == 'test4'){%>
-        <iframe src="<%=book.DocPath  %>#view=FitH" frameborder="0" height='150' width="400"></iframe>
-        <a href="<%= book.coverImagePath %>" target="_blank" ><img height='150' width="100" src="<%= book.coverImagePath %> " alt="image embedded using base64 encoding!"></a>
-        <%= book.title %> 
-        <%// console.log(book.coverImagePath) %>
-      <% } else { %>
-        <img height='150' width="100" src="<%= book.coverImagePath %> " alt=""></a>
-        <%= book.title %> 
-      <% } %> 
+        <%= book.title %>
+        <%- include('../partials/deleteForm', { url: `/books/${book.id}` }) %>
+        <a href="/books/<%= book.id %>"><img height='150' width="100" src="<%= book.coverImagePath %> " alt=""></a>
     <% }) %>   
 </div>

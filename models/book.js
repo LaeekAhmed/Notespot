@@ -9,7 +9,7 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  desc: {
+  description: {
     type: String,
   },
   publish_date: {
@@ -43,18 +43,6 @@ const bookSchema = new mongoose.Schema({
     ref: "Author",
   },
 });
-
-function openBase64InNewTab (data, mimeType) {
-  var byteCharacters = atob(data);
-  var byteNumbers = new Array(byteCharacters.length);
-  for (var i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-  var byteArray = new Uint8Array(byteNumbers);
-  var file = new Blob([byteArray], { type: mimeType + ';base64' });
-  var fileURL = URL.createObjectURL(file);
-  window.open(fileURL);
-}
 
 bookSchema.virtual('DocPath').get(function() {
   // let blob = b64toBlob(this.Doc.toString("base64"),this.DocType);

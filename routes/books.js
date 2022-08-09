@@ -58,6 +58,15 @@ router.get("/new", async (req, res) => {
     renderNewPage(res,new Book())
 });
 
+// open local file
+router.get('/asset', function(req, res){
+  var tempFile="C:/Users/User/Downloads/web_dev/MEN-project/public/pdfs/del54.pdf";
+  fs.readFile(tempFile, function (err,data){
+     res.contentType("application/pdf");
+     res.send(data);
+  });
+});
+
 // Create book Route
 router.post("/",upload.single('cover'),async (req, res) => {
   // req.file is the uploaded file.
@@ -71,6 +80,7 @@ router.post("/",upload.single('cover'),async (req, res) => {
     description : req.body.description
   })
   saveCover(book, req.body.cover)
+  console.log('body.pdf : ',req.body.pdf == null)
   savePdf(book, req.body.pdf)
 
   try {
@@ -98,6 +108,46 @@ async function renderNewPage(res, book,hasError = false) {
   }
 }
 
+// Show Book Route
+router.get('/:id', async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id)
+    const author = await Author.findById(book.author)
+    res.render('books/show', { book: book,author : author})
+  } catch {
+    res.redirect('/')
+  }
+})
+
+// edit book route
+router.get("/:id/edit", async (req, res) => {
+  res.send("edit book")
+});
+
+// update book route
+router.put("/:id", async (req, res) => {
+  res.send("update book")
+});
+
+// delete book route
+router.delete("/:id", async (req, res) => {
+  let books
+  try {
+    const books = await Book.findById(req.params.id)
+    await books.remove()
+    res.redirect('/books')
+  } catch {
+    if(books != null){
+      res.render('books/show',{
+        book : books,
+        errorMessage : 'Could not remove Book!'
+      })
+    }
+    res.redirect('/')
+  }
+});
+
+// Functions ;----------------------------------------------------------------------------------------------------
 
 function saveCover(book, coverEncoded) {
   if (coverEncoded == null) return
@@ -109,25 +159,21 @@ function saveCover(book, coverEncoded) {
 }
 
 function savePdf(book, coverEncoded) {
-  if (coverEncoded == null) return
-  const pdf = JSON.parse(coverEncoded)
-  if (pdf != null) {
-    book.Doc = new Buffer.from(pdf.data, 'base64')
-    book.DocType = pdf.type
-    console.log('Doc : ',book.DocType,pdf.data.length)
+  if(coverEncoded.length != 0){
+    console.log('cp1')
+    const pdf = JSON.parse(coverEncoded)
+    console.log('cp2')
+    if (pdf != null) {
+      console.log('cp3')
+      book.Doc = new Buffer.from(pdf.data, 'base64')
+      book.DocType = pdf.type
+      console.log('Doc : ',book.DocType,pdf.data.length)
+    }}
+  else{
+    console.log('cp4')
+    book.Doc = ''
+    book.DocType = ''
   }
-}
-
-function openBase64InNewTab (data, mimeType) {
-  var byteCharacters = atob(data);
-  var byteNumbers = new Array(byteCharacters.length);
-  for (var i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-  var byteArray = new Uint8Array(byteNumbers);
-  var file = new Blob([byteArray], { type: mimeType + ';base64' });
-  var fileURL = URL.createObjectURL(file);
-  window.open(fileURL);
 }
 
 module.exports = router;

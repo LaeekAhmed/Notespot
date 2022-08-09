@@ -5,7 +5,6 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
-const bodyParser = require("body-parser");
 const methodOverride = require('method-override')
 
 //import routes/controllers
@@ -24,7 +23,9 @@ app.set("layout", "layouts/layout");
 app.use(expressLayouts);
 app.use(methodOverride('_method'))
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
+var bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: "50mb"}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
 const mongoose = require("mongoose");
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
