@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const File = require('../models/file');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs') // filesys -> to delete book covers created while no new entry for book was created due to error
 
 let storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/') ,
@@ -50,7 +51,11 @@ router.get('/download/:uuid', async (req, res) => {
     } 
     const response = await file.save();
     const filePath = `${__dirname}/../${file.path}`;
-    res.download(filePath);
+    // res.download(filePath);
+    fs.readFile(filePath, function (err,data){
+        res.contentType("application/pdf");
+        res.send(data);
+     });
  });
 
 router.get('/:uuid', async (req, res) => {
