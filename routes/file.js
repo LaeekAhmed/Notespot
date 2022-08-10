@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
             size: req.file.size
         });
         const response = await file.save();
-        res.json({ file: `${process.env.APP_BASE_URL}/files/${response.uuid}` }); // file.uuid
+        res.redirect(`${process.env.APP_BASE_URL}/files/${response.uuid}`); // file.uuid
         // eg : http://localhost:3000/files/345h5465h-3245tkgndj
       });
 });
@@ -65,7 +65,7 @@ router.get('/:uuid', async (req, res) => {
         if(!file) {
             return res.render('files/download', { errorMessage: 'Link has been expired.'});
         } 
-        return res.render('files/download', { uuid: file.uuid, fileName: file.filename, fileSize: file.size, downloadLink: `${process.env.APP_BASE_URL}/files/download/${file.uuid}` });
+        return res.render('files/download', { uuid: file.uuid, fileName: file.filename, fileSize: file.size,path : file.path, downloadLink: `${process.env.APP_BASE_URL}/files/download/${file.uuid}` });
     } catch(err) {
         return res.render('files/download', { errorMessage: 'Something went wrong.'});
     }

@@ -1,8 +1,10 @@
 <h2 class="page-header"><%= book.title %></h2>
+<%- include('../files/temp') %>
 <div class="book-details">
   <div>
     <img class="book-cover" src="<%= book.coverImagePath %>" height="150" width="100">
     <div class="book-details-btn-grid">
+      <a class="btn btn-primary" href="/books/<%= book.id %>/edit">Edit</a>
       <%- include('../partials/deleteForm', { url: `/books/${book.id}` }) %>
       <a class="btn btn-primary book-details-author-button" href="/authors/<%= book.author %>">View Author</a>
     </div>
@@ -12,8 +14,16 @@
     <div><%= author.name %></div>
     <div class="book-details-label"> | Publish Date:</div>
     <div><%= book.publish_date.toDateString() %></div>
+    <div class="book-details-label"> | Page Count:</div>
+    <div><%= book.pageCount %></div>
     <div class="book-details-label"> | Description:</div>
-    <div><%= book.description %></div><br>
-    <%- include('../files/download') %>
+    <div><%= book.description %></div>
+    <div><% if(book.DocType != ''){%>
+        <!-- <a href="#" onclick="window.open('https://www.schoollearningresources.com/PDF/_Math_Resources_Trigonometric_Formulas.pdf'); return false;">MyPDF</a> 
+        <iframe src="<//%= book.DocPath %>#view=FitH" frameborder="10" height='150' width="400"></iframe>
+        <iframe src="https://www.schoollearningresources.com/PDF/_Math_Resources_Trigonometric_Formulas.pdf#view=FitH" frameborder="0" height='150' width="400">
+        </iframe> -->
+        <% } %> 
+    </div>
   </div>
 </div>

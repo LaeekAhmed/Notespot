@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Doc = require("../models/book"); //import db file
+const Book = require("../models/book"); //import db file
 const Author = require("../models/author"); //import db file
-const { v4: uuidv4 } = require('uuid');
+const PDFJS = require("pdfjs")
 
 /* import/methods to deal with cover image:
 firstly we need to create the image file in the folder after the user uploads it,then get the name and save it */
@@ -12,22 +12,27 @@ const path = require('path') //built-in library
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif'] //accepted image-type list
 const uploadPath = path.join('public','pdfs') //'public/uploads/bookCovers'
 const fs = require('fs') // filesys -> to delete book covers created while no new entry for book was created due to error
-
 //func to create file and place it in the dest folder.
-let storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/') ,
-  filename: (req, file, cb) => {
-      const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
-            cb(null, uniqueName)
-  } ,
-});
+const upload = multer({
+    dest : uploadPath,
+    fileFilter: (req,file,callback) => {
+      callback(null,imageMimeTypes.includes(file.mimetype)) //checking if the user-provided file is in the accepted image type.
+    }
 
-let upload = multer({ storage, limits:{ fileSize: 1000000 * 100 }, }).single('myfile'); //100mb
+})
 
 // all-search books route
 router.get("/", async (req, res) => {
-  // get from org!!!
-      let query = Doc.find()
+    // let searchOptions = {};
+    // // req.query instead of req.body since this is a get NOT post action;
+    // if (req.query.title != null && req.query.title !== "") {
+    //   /* RegExp => searching for "yl" will also include "kyle","jo" will include "john"
+    //    i => case insensitive*/
+    //   searchOptions.title = new RegExp(req.query.title, "i");
+    // }
+    // try{
+    //     const books = await Book.find(searchOptions);
+      let query = Book.find()
       if (req.query.title != null && req.query.title != '') {
         query = query.regex('title', new RegExp(req.query.title, 'i'))
       }
@@ -50,7 +55,7 @@ router.get("/", async (req, res) => {
 
 // new book route
 router.get("/new", async (req, res) => {
-    renderNewPage(res,new Doc())
+    renderNewPage(res,new Book())
 });
 
 // open local file
@@ -63,36 +68,28 @@ router.get('/asset', function(req, res){
 });
 
 // Create book Route
-router.post('/', (req, res) => {
-  //storing file 
-  upload(req, res, async (err) => {
-  // validate request
-    if(!req.file){
-      return res.json({error : 'All fields are required!'})
-    }
-    if (err) {
-      return res.status(500).send({ error: err.message });
-    }
-      // storing new entry in collection 'books/Book'
-      const book = new Doc({
-          title : req.body.title,
-          description : req.body.description,
-          publish_date : req.body.publishDate, // converting from string
-          path: req.file.path,
-          size: req.file.size,
-          uuid: uuidv4(),
-          author : req.body.author,
-      })
-      saveCover(book, req.body.cover)
+router.post("/",upload.single('cover'),async (req, res) => {
+  // req.file is the uploaded file.
+  const fileName = req.file != null ? req.file.filename : null
+  // new entry "book" into table "Book"
+  const book = new Book({
+    title : req.body.title,
+    author : req.body.author,
+    publish_date : req.body.publishDate, // converting from string
+    pageCount : req.body.pageCount,
+    description : req.body.description
+  })
+  saveCover(book, req.body.cover)
+  console.log('body.pdf : ',req.body.pdf == null)
+  savePdf(book, req.body.pdf)
 
-      try{
-          const newBook = await book.save();
-          res.redirect(`books/${newBook.id}`)
-      } catch {
-          renderNewPage(res, book, true)
-      }
-    });
-});
+  try {
+    const newBook = await book.save()
+    //res.redirect(`books/${newBook.id}`)
+  } catch {
+    renderNewPage(res, book, true)
+  }
+})
 
 async function renderNewPage(res, book,hasError = false) {
   try {
@@ -114,30 +111,13 @@ async function renderNewPage(res, book,hasError = false) {
 // Show Book Route
 router.get('/:id', async (req, res) => {
   try {
-    const book = await Doc.findById(req.params.id)
+    const book = await Book.findById(req.params.id)
     const author = await Author.findById(book.author)
-    res.render('books/show', { book: book,author : author, downloadLink: `${process.env.APP_BASE_URL}/books/download/${book.uuid}` });
+    res.render('books/show', { book: book,author : author})
   } catch {
     res.redirect('/')
   }
 })
-
-// open pdf route
-router.get('/download/:uuid', async (req, res) => {
-  // Extract link and get file from storage send download stream 
-  const file = await Doc.findOne({ uuid: req.params.uuid });
-  // Link expired
-  if(!file) {
-       return res.render('files/download', { error: 'Link has been expired.'});
-  } 
-  const response = await file.save();
-  const filePath = `${__dirname}/../${file.path}`;
-  // res.download(filePath);
-  fs.readFile(filePath, function (err,data){
-      res.contentType("application/pdf");
-      res.send(data);
-   });
-});
 
 // edit book route
 router.get("/:id/edit", async (req, res) => {
@@ -153,7 +133,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   let books
   try {
-    const books = await Doc.findById(req.params.id)
+    const books = await Book.findById(req.params.id)
     await books.remove()
     res.redirect('/books')
   } catch {
@@ -175,6 +155,24 @@ function saveCover(book, coverEncoded) {
   if (cover != null && imageMimeTypes.includes(cover.type)) {
     book.coverImage = new Buffer.from(cover.data, 'base64')
     book.coverImageType = cover.type
+  }
+}
+
+function savePdf(book, coverEncoded) {
+  if(coverEncoded.length != 0){
+    console.log('cp1')
+    const pdf = JSON.parse(coverEncoded)
+    console.log('cp2')
+    if (pdf != null) {
+      console.log('cp3')
+      book.Doc = new Buffer.from(pdf.data, 'base64')
+      book.DocType = pdf.type
+      console.log('Doc : ',book.DocType,pdf.data.length)
+    }}
+  else{
+    console.log('cp4')
+    book.Doc = ''
+    book.DocType = ''
   }
 }
 

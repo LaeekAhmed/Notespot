@@ -11,14 +11,13 @@
   </div>
 </form>
 <br />
-<!-- <% console.log(authors.length) %> -->
 <!-- author is an array of objects of the form 
 {_id: new ObjectId("62ea0...."),name: 'Laeek Ahmed',__v: 0} -->
 <% let arr1 = [] %> <% authors.forEach(author => { %>
 <div class="author-row">
   <% if (arr1.includes((author.name))==false) {%>
   <div class="author-name">
-    <%= author.name %><% arr1.push(author.name) %> <% console.log(arr1) %>
+    <%= author.name %><% arr1.push(author.name) %>
   </div>
   <div class="btn-row">
     <a class="btn btn-primary" href="/authors/<%= author.id %>">View</a>
