@@ -11,7 +11,9 @@ const methodOverride = require('method-override')
 const indexRouter = require("./routes/index");
 const authorRouter = require("./routes/authors");
 const bookRouter = require("./routes/books");
+const fileRouter = require("./routes/file");
 
+// download pop-up test
 app.get("/here", (req, res) => {
   res.download("server.js"); //download pop-up
   console.log("here");
@@ -27,14 +29,27 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
+// Database connection
 const mongoose = require("mongoose");
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
-const db = mongoose.connection;
-db.on("error", (error) => console.error(error));
-db.once("open", () => console.log("Connected to Mongoose"));
+const { fileLoader } = require("ejs");
 
+function connectDB() {
+  // Database connection 🥳
+  mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true});
+  const connection = mongoose.connection;
+  connection.once('open', () => {
+      console.log('------------------------------')
+      console.log('Database connected ✅');
+  }).on('error',err => {
+      console.log('Connection failed ⚠️');
+  });
+}
+connectDB()
+
+// using routes/controllers
 app.use("/", indexRouter);
 app.use("/authors", authorRouter);
 app.use("/books", bookRouter);
+app.use("/files", fileRouter);
 
 app.listen(process.env.PORT || 3000);
