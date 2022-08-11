@@ -132,11 +132,11 @@ router.get('/download/:uuid', async (req, res) => {
   } 
   const response = await file.save();
   const filePath = `${__dirname}/../${file.path}`;
-  // res.download(filePath);
-  fs.readFile(filePath, function (err,data){
-      res.contentType("application/pdf");
-      res.send(data);
-   });
+  res.download(filePath);
+  // fs.readFile(filePath, function (err,data){
+  //     res.contentType("application/pdf");
+  //     res.send(data);
+  // });
 });
 
 // edit book route
