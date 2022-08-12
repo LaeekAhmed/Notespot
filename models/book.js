@@ -11,6 +11,8 @@ const DocSchema = new mongoose.Schema({
   path: { type: String, required: true },
   size: { type: Number, required: true },
   uuid: { type: String, required: true },
+  file_name : { type: String, required: true },
+  file_url : { type: String, required: true },
   coverImage: {type: Buffer,required: true},
   coverImageType: {type: String,required: true},
   author: {

@@ -3,15 +3,25 @@ const router = express.Router();
 const Doc = require("../models/book"); //import db file
 const Author = require("../models/author"); //import db file
 const { v4: uuidv4 } = require('uuid');
+const crypto =  require('crypto');
+const aws = require("aws-sdk");
+const { S3Client, PutObject } =  require("@aws-sdk/client-s3");
 
 /* import/methods to deal with cover image:
 firstly we need to create the image file in the folder after the user uploads it,then get the name and save it */
 
 const multer = require('multer') //allows us to work with multipart forms (file-form)
+const multerS3 = require("multer-s3-v2");
 const path = require('path') //built-in library
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif'] //accepted image-type list
 const uploadPath = path.join('public','pdfs') //'public/uploads/bookCovers'
 const fs = require('fs') // filesys -> to delete book covers created while no new entry for book was created due to error
+
+const s3 = new aws.S3({
+  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: process.env.S3_BUCKET_REGION,
+});
 
 //func to create file and place it in the dest folder.
 let storage = multer.diskStorage({
@@ -66,13 +76,24 @@ router.get('/asset', function(req, res){
 router.post('/', (req, res) => {
   //storing file 
   upload(req, res, async (err) => {
-  // validate request
-    if(!req.file){
-      return res.json({error : 'All fields are required!'})
-    }
-    if (err) {
-      return res.status(500).send({ error: err.message });
-    }
+      // validate request
+      if(!req.file){
+        return res.json({error : 'All fields are required!'})
+      }
+      if (err) {
+        return res.status(500).send({ error: err.message });
+      }
+      console.log('file = ',req.file.filename)
+      // Configure the upload details to send to S3
+      const params = {
+        Bucket: 'note-spot',
+        Body: fs.readFileSync(req.file.path),
+        Key: req.file.filename,
+        ContentType: req.file.mimetype,
+        }
+      // Uploading files to the bucket
+      const uploadedImage = await s3.upload(params).promise()
+      console.log('aws done : ',uploadedImage.Location)
       // storing new entry in collection 'books/Book'
       const book = new Doc({
           title : req.body.title,
@@ -81,12 +102,15 @@ router.post('/', (req, res) => {
           path: req.file.path,
           size: req.file.size,
           uuid: uuidv4(),
+          file_name : req.file.filename,
+          file_url : uploadedImage.Location,
           author : req.body.author,
       })
       saveCover(book, req.body.cover)
 
       try{
           const newBook = await book.save();
+          //res.send('done')
           res.redirect(`books/${newBook.id}`)
       } catch {
           renderNewPage(res, book, true)
@@ -116,7 +140,7 @@ router.get('/:id', async (req, res) => {
   try {
     const book = await Doc.findById(req.params.id)
     const author = await Author.findById(book.author)
-    res.render('books/show', { book: book,author : author, downloadLink: `${process.env.APP_BASE_URL}/books/download/${book.uuid}` });
+    res.render('books/show', { book: book,author : author});
   } catch {
     res.redirect('/')
   }
@@ -177,5 +201,7 @@ function saveCover(book, coverEncoded) {
     book.coverImageType = cover.type
   }
 }
+
+const generateFileName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex')
 
 module.exports = router;

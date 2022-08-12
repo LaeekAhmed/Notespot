@@ -17,14 +17,12 @@
             <%- include('../partials/errorMsg.ejs') %>
         <% } else { %>
         <h2>Your file is ready to download</h2>
-        <p>Link expires in 24 hours</p>
         <div class="download__meta">
             <h4>file : <%= book.title %></h4>
             <small>size (approx) : <%= parseInt(book.size/1000000) %> MB</small>
         </div>
         <div class="send-btn-container">
-            <!-- <iframe src="../../uploads/1660104705700-89126949.pdf" style="width:600px; height:500px;" frameborder="0"></iframe> -->
-            <a href="<%= downloadLink %>">Download file</a>
+            <iframe src="<%= book.file_url %>#view=fitH" style="width:500px; height:600px;" frameborder="0"></iframe>
         </div>
         <% } %>
     </section>

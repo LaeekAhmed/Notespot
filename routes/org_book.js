@@ -68,20 +68,18 @@ router.get('/asset', function(req, res){
 });
 
 // Create book Route
-router.post("/",upload.single('cover'),async (req, res) => {
+router.post("/",upload.single('myfile'),async (req, res) => {
   // req.file is the uploaded file.
   const fileName = req.file != null ? req.file.filename : null
+  console.log(fileName)
   // new entry "book" into table "Book"
   const book = new Book({
     title : req.body.title,
     author : req.body.author,
     publish_date : req.body.publishDate, // converting from string
-    pageCount : req.body.pageCount,
     description : req.body.description
   })
   saveCover(book, req.body.cover)
-  console.log('body.pdf : ',req.body.pdf == null)
-  savePdf(book, req.body.pdf)
 
   try {
     const newBook = await book.save()
