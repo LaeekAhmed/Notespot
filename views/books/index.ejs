@@ -1,12 +1,10 @@
 <h2 class="page-header">Search Book</h2>
-<form action="/books" method="GET" style="padding: 15px">
+<form action="/books" method="GET">
   <div class="form-row">
     <div class="form-item">
       <label>Title</label>
       <input type="text" name="title" value="<%= searchOptions.title %>">
     </div>
-  </div>
-  <div class="form-row" style="padding: 15px">
     <div class="form-item">
       <label>Published After</label>
       <input type="date" name="publishedAfter" value="<%= searchOptions.publishedAfter %>">
@@ -15,8 +13,6 @@
       <label>Published Before</label>
       <input type="date" name="publishedBefore" value="<%= searchOptions.publishedBefore %>">
     </div>
-  </div>
-  <div class="form-row form-row-end">
     <button class="btn btn-primary" type="submit">Search</button>
   </div>
 </form>
@@ -24,10 +20,4 @@
 <div>
   
 </div>
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
-    <% books.forEach(book => { %>
-        <%= book.title %>
-        <%- include('../partials/deleteForm', { url: `/books/${book.id}` }) %>
-        <a href="/books/<%= book.id %>"><img height='150' width="100" src="<%= book.coverImagePath %> " alt=""></a>
-    <% }) %>   
-</div>
+<%- include('../partials/bookGrid', { books: books}) %>

@@ -9,20 +9,18 @@
 </head>
 
 <body>
-    <img src="/img/logo.png" alt="no img" class="logo">
+    <!-- <img src="/img/logo.png" alt="no img" class="logo"> -->
 
-    <section class="download">
-        <img class="download__icon" src="/img/download-sd.svg" alt="no img">
+    <section class="download pt-4">
+        <!-- <img class="download__icon" src="/img/download-sd.svg" alt="no img"> -->
         <% if(locals.error){ %>
             <%- include('../partials/errorMsg.ejs') %>
         <% } else { %>
-        <h2>Your file is ready to download</h2>
-        <div class="download__meta">
-            <h4>file : <%= book.title %></h4>
+        <div class="download__meta pb-2">
             <small>size (approx) : <%= parseInt(book.size/1000000) %> MB</small>
         </div>
         <div class="send-btn-container">
-            <iframe src="<%= book.file_url %>#view=fitH" style="width:500px; height:600px;" frameborder="0"></iframe>
+            <iframe src="<%= book.file_url %>#view=fitH" style="width:100%; height:600px;" frameborder="0"></iframe>
         </div>
         <% } %>
     </section>

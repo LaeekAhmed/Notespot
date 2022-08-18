@@ -1,8 +1,9 @@
-Middle (from views/index.ejs)
-<div>
-    <% books.forEach(book => { %>
-        <a href="/books/<%= book.id %>"><img height='150' width="100" src="<%= book.coverImagePath %> " alt=""></a>
-        <%= book.title %> 
-        <%// console.log(book.coverImagePath) %> 
-    <% }) %>   
+<div class="intro">
+    <h5>What is Note-spot ?</h5>
+    It is a Document library where you can read and download other's uploads and share your docs with others !
+    <br>
+    More like a YouTube for notes.
 </div>
+<br>
+Recently Added items;
+<%- include('partials/bookGrid', { books: books}) %>

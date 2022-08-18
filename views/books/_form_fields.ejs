@@ -1,9 +1,9 @@
 <div class="form-row">
-  <div class="form-item">
+  <div class="form-item pb-2">
     <label>Title</label>
-    <input type="text" name="title" value="<%= book.title %>" />
+    <input type="text" name="title" required value="<%= book.title %>" />
   </div>
-  <div class="form-item">
+  <div class="form-item pb-2">
     <label>Author</label>
     <select name="author">
         <!-- authors is an array containing Author objects -->
@@ -20,7 +20,7 @@
 </div>
 
 <div class="form-row">
-  <div class="form-item">
+  <div class="form-item pb-2">
     <label>Publish Date</label>
     <input
       type="date"
@@ -29,18 +29,18 @@
     />
   </div>
   <!-- book.publishDate format : 2019-10-19T12:34:45.6 -->
+  <div class="form-item file">
+    <label>Add document</label>
+    <input type="file" required name="myfile"/>
+  </div>
 </div>
 
 <div class="form-row">
-  <div class="form-item form-item-no-grow">
+  <div id="img1" class="form-item form-item-no-grow">
     <label>Cover</label>
-    <input type="file" name="cover" class="filepond" />
+    <input type="file" name="cover" required class="book-cover filepond" />
   </div>
-  <div>
-    <label>Add document</label>
-    <input type="file" name="myfile"/>
-  </div>
-  <div class="form-item">
+  <div class="form-item pt-2">
     <label>Description</label>
     <textarea name="description"><%= book.description %></textarea>
   </div>

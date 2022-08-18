@@ -7,7 +7,7 @@ const Blob = require('node-blob');
 const DocSchema = new mongoose.Schema({
   title: {type: String,required: true },
   description: {type: String},
-  publish_date: {type: Date,required: true},
+  publish_date: {type: Date,default: Date.now},
   path: { type: String, required: true },
   size: { type: Number, required: true },
   uuid: { type: String, required: true },

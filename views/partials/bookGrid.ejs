@@ -1,4 +1,8 @@
-<% books.forEach(book => { %>
-    <%= book.title %>
-    <a href="/books/<%= book.id %>"><img height='150' width="100" src="<%= book.coverImagePath %> " alt=""></a> 
-<% }) %>
+<div class="gallery">
+    <% books.forEach(book => { %>
+        <div class="p-2" style="width: 185px; height: 280px;">
+            <a href="/books/<%= book.id %>"><img height='220' width="160" src="<%= book.coverImagePath %> " alt=""></a> 
+            <h6 class="card-title pt-2"><%= book.title %></h6>
+        </div>
+    <% }) %>
+</div>

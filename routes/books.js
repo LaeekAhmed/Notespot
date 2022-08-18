@@ -25,7 +25,6 @@ const s3 = new aws.S3({
 
 //func to create file and place it in the dest folder.
 let storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/') ,
   filename: (req, file, cb) => {
       const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
             cb(null, uniqueName)
@@ -113,6 +112,12 @@ router.post('/', (req, res) => {
           //res.send('done')
           res.redirect(`books/${newBook.id}`)
       } catch {
+          // removing file from s3
+          var params2 = {  Bucket: 'note-spot', Key: req.file.filename};
+          s3.deleteObject(params2, function(err, data) {
+              if (err) console.log('s3 del err (from post): ',err, err.stack);
+              else     console.log('file deleted from S3 (from post)');        
+          });
           renderNewPage(res, book, true)
       }
     });
@@ -178,6 +183,13 @@ router.delete("/:id", async (req, res) => {
   let books
   try {
     const books = await Doc.findById(req.params.id)
+    // removing file from s3
+    var params = {  Bucket: 'note-spot', Key: books.file_name };
+    s3.deleteObject(params, function(err, data) {
+        if (err) console.log('s3 del err : ',err, err.stack);
+        else     console.log('file deleted from S3');        
+    });
+    // removing file from db
     await books.remove()
     res.redirect('/books')
   } catch {
