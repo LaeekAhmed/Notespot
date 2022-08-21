@@ -135,7 +135,16 @@ img{
 
 /* navbar styling */
 .navbar-brand{
-    color: aliceblue !important;
+    text-transform: uppercase;
+    font-family: verdana !important;
+    font-size: 12;
+    font-weight: 700;
+    color:rgb(220, 180, 132) !important;
+    text-shadow: 1px 1px 1px blueviolet,
+        1px 2px 1px blueviolet,
+        1px 3px 1px blueviolet,
+        1px 4px 1px blueviolet,
+        1px 5px 1px blueviolet !important;
 }
 
 .nav-item{
@@ -149,16 +158,17 @@ img{
     border-radius: 15px;
     color: white !important;
     background: none;
-    padding: 0% 1rem !important;
+    padding: 0 1rem !important;
 }
 
 .nav-link:hover{
     /* rem instead of % since parent has no right margin (% is linked to parent margin rem insn't) */
-    margin: 1% 1rem !important; 
+    margin: 1% 1rem !important;
+    font-style:italic;
     width: fit-content;
     background-color: rgb(5, 86, 248);
     border-radius: 15px;
-    padding: 0% 1rem !important;
+    padding: 0 1rem !important;
     opacity: 100%;
 }
 

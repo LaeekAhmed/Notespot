@@ -6,13 +6,27 @@ const express = require("express");
 const app = express();
 const expressLayouts = require("express-ejs-layouts");
 const methodOverride = require('method-override')
+const compression = require('compression')
 
 //import routes/controllers
-const indexRouter = require("./routes/index");
-const authorRouter = require("./routes/authors");
-const bookRouter = require("./routes/books");
+const indexRouter = require("./routes/index.min");
+const authorRouter = require("./routes/authors.min");
+const bookRouter = require("./routes/books.min");
 const fileRouter = require("./routes/file");
 
+app.use(
+  compression({
+    level: 6,
+    // bytes;
+    threshold: 10*1000,
+    filter: (req,res) => {
+      if (req.headers['x-no-compression']){
+        return false
+      }
+      return compression.filter(req,res)
+    },
+  })
+)
 // download pop-up test
 app.get("/here", (req, res) => {
   res.download("server.js"); //download pop-up
