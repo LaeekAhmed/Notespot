@@ -5,22 +5,21 @@ const Book = require("../models/book");
 
 // all/search authors route, async func makes working wiht mongoose easier/await feature
 router.get("/", async (req, res) => {
-  let searchOptions = {};
-  //⚠️ req.query instead of req.body since this is a get NOT post action;
-  if (req.query.name != null && req.query.name !== "") {
-    /* RegExp => searching for "yl" will also include "kyle","jo" will include "john"
-     i => case insensitive*/
-    searchOptions.name = new RegExp(req.query.name, "i");
-  }
-  try {
-    const authors = await Author.find(searchOptions);
-    res.render("authors/index", {
-      authors: authors,
-      searchOptions: req.query,
-    });
-  } catch {
-    res.redirect("/");
-  }
+    //⚠️ req.query instead of req.body since this is a get NOT post action;
+    let query = Author.find()
+    if (req.query.name != null && req.query.name != '') {
+      query = query.regex('name', new RegExp(req.query.name, 'i'))
+    }
+    /* RegExp/regex => searching for "yl" will also include "kyle","jo" will include "john", i => case insensitive*/
+    try {
+      const authors = await query.exec()
+      res.render("authors/index", {
+        authors: authors,
+        searchOptions: req.query,
+      });
+    } catch {
+      res.redirect("/");
+    }
 });
 // procedure ✳️ => .get('/authors') -> render(authors/index.ejs) ->(submit) .get('/authors?name=....')
 
