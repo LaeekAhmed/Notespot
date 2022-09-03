@@ -9,11 +9,11 @@ const methodOverride = require('method-override')
 const compression = require('compression')
 
 //import routes/controllers
-const indexRouter = require("./routes/index.min");
+const indexRouter = require("./routes/index");
 const authorRouter = require("./routes/authors.min");
 const bookRouter = require("./routes/books.min");
-const fileRouter = require("./routes/file");
 
+// gzip compression
 app.use(
   compression({
     level: 6,
@@ -28,10 +28,10 @@ app.use(
   })
 )
 // download pop-up test
-app.get("/here", (req, res) => {
-  res.download("server.js"); //download pop-up
-  console.log("here");
-});
+// app.get("/here", (req, res) => {
+//   res.download("server.js"); //download pop-up
+//   console.log("here");
+// });
 
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
@@ -48,7 +48,7 @@ const mongoose = require("mongoose");
 const { fileLoader } = require("ejs");
 
 function connectDB() {
-  // Database connection 🥳
+  // Database connection
   mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true});
   const connection = mongoose.connection;
   connection.once('open', () => {
@@ -64,6 +64,5 @@ connectDB()
 app.use("/", indexRouter);
 app.use("/authors", authorRouter);
 app.use("/books", bookRouter);
-app.use("/files", fileRouter);
 
 app.listen(process.env.PORT || 3000);

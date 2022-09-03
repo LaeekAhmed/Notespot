@@ -5,16 +5,16 @@ const Author = require("../models/author"); //import db file
 const { v4: uuidv4 } = require('uuid');
 const crypto =  require('crypto');
 const aws = require("aws-sdk");
-const { S3Client, PutObject } =  require("@aws-sdk/client-s3");
+// const { S3Client, PutObject } =  require("@aws-sdk/client-s3");
 
 /* import/methods to deal with cover image:
 firstly we need to create the image file in the folder after the user uploads it,then get the name and save it */
 
 const multer = require('multer') //allows us to work with multipart forms (file-form)
-const multerS3 = require("multer-s3-v2");
+// const multerS3 = require("multer-s3-v2");
 const path = require('path') //built-in library
 const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif'] //accepted image-type list
-const uploadPath = path.join('public','pdfs') //'public/uploads/bookCovers'
+// const uploadPath = path.join('public','pdfs') //'public/uploads/bookCovers'
 const fs = require('fs') // filesys -> to delete book covers created while no new entry for book was created due to error
 
 const s3 = new aws.S3({
@@ -63,13 +63,13 @@ router.get("/new", async (req, res) => {
 });
 
 // open local file
-router.get('/asset', function(req, res){
-  var tempFile="C:/Users/User/Downloads/web_dev/MEN-project/public/pdfs/del54.pdf";
-  fs.readFile(tempFile, function (err,data){
-     res.contentType("application/pdf");
-     res.send(data);
-  });
-});
+// router.get('/asset', function(req, res){
+//   var tempFile="C:/Users/User/Downloads/web_dev/MEN-project/public/pdfs/del54.pdf";
+//   fs.readFile(tempFile, function (err,data){
+//      res.contentType("application/pdf");
+//      res.send(data);
+//   });
+// });
 
 // Create book Route
 router.post('/', (req, res) => {

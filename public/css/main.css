@@ -255,6 +255,8 @@ iframe{
 .book-details{
     padding: 2% 1%;
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .book-details-label {

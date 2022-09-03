@@ -26,6 +26,8 @@
     "multer-s3-v2": "^2.2.1",
     "node-blob": "^0.0.2",
     "pdfjs": "^2.4.7",
+    "redis": "^4.2.0",
+    "util": "^0.12.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
