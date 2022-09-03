@@ -8,6 +8,8 @@ router.get("/", async (req, res) => {
     //⚠️ req.query instead of req.body since this is a get NOT post action;
     let query = Author.find()
     if (req.query.name != null && req.query.name != '') {
+      console.log(typeof(req.query.name))
+      if(req.query.name[0]==' ') req.query.name = req.query.name.substring(1);
       query = query.regex('name', new RegExp(req.query.name, 'i'))
     }
     /* RegExp/regex => searching for "yl" will also include "kyle","jo" will include "john", i => case insensitive*/
