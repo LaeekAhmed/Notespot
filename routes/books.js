@@ -31,7 +31,7 @@ let storage = multer.diskStorage({
   } ,
 });
 
-let upload = multer({ storage, limits:{ fileSize: 1000000 * 100 }, }).single('myfile'); //100mb
+let upload = multer({ storage, limits:{ fileSize: 1000000 * 100,fieldSize: 2 * 1024 * 1024 }, }).single('myfile'); //100mb
 
 // all-search books route
 router.get("/", async (req, res) => {
@@ -80,7 +80,7 @@ router.post('/', (req, res) => {
         return res.json({error : 'All fields are required!'})
       }
       if (err) {
-        return res.status(500).send({ error: err.message });
+        return res.status(500).send({ error: err.message+', try to use a image with size <= 500 kb ' });
       }
       console.log('file = ',req.file.filename)
       // Configure the upload details to send to S3

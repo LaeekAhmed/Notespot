@@ -136,15 +136,8 @@ img{
 /* navbar styling */
 .navbar-brand{
     text-transform: uppercase;
-    font-family: verdana !important;
-    font-size: 12;
-    font-weight: 700;
-    color:rgb(220, 180, 132) !important;
-    text-shadow: 1px 1px 1px blueviolet,
-        1px 2px 1px blueviolet,
-        1px 3px 1px blueviolet,
-        1px 4px 1px blueviolet,
-        1px 5px 1px blueviolet !important;
+    color: white !important;
+    /* font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif */
 }
 
 .nav-item{
