@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require('express')
 const router = express.Router()
 const Book = require('../models/book')
@@ -5,8 +6,9 @@ const redis = require('redis')
 const { json } = require('body-parser')
 
 // ⚠️ server side caching ;
-const redisClient = redis.createClient();
-// redisClient.connect();
+
+const redisClient = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
+
 (async () => {
   await redisClient.connect();
 })();
@@ -17,14 +19,12 @@ redisClient.on('error', (err) => console.log('<:: Redis Client Error', err));
 router.get('/', async (req, res) => {
   redisClient.get('book2').then( async (book2) => {
     if(book2 != null){
-      console.log('cp3')
       // console.log('try1 : ',book2)
       let val = JSON.parse(book2)
       // console.log('try2 : ',Buffer.from(val[1].coverImage))
       // val[1].coverImage = Buffer.from(val[1].coverImage)
       res.render('index', { books: val })
     } else {
-      console.log('cp4')
       let books
       try {
         books = await Book.find().sort({ createdAt: 'desc' }).limit(10).exec()
@@ -36,7 +36,6 @@ router.get('/', async (req, res) => {
       res.render('index', { books: books })
     }
   })
-  console.log('cpf')
 
 })
 
