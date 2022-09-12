@@ -19,7 +19,7 @@ redisClient.on('error', (err) => console.log('<:: Redis Client Error', err));
 router.get('/', async (req, res) => {
   redisClient.get('book2').then( async (book2) => {
     if(book2 != null){
-      // console.log('try1 : ',book2)
+      // console.log('try1: ',book2)
       let val = JSON.parse(book2)
       // console.log('try2 : ',Buffer.from(val[1].coverImage))
       // val[1].coverImage = Buffer.from(val[1].coverImage)
