@@ -2,13 +2,14 @@
   "name": "men-project",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "16.16.0",
+    "npm": "8.11.0"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "devStart": "nodemon server.js",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "npm run build"
+    "devStart": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
