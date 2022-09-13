@@ -6,9 +6,7 @@ const { json } = require('body-parser')
 
 // ⚠️ server side caching ;
 console.log(process.env.REDISCLOUD_URL)
-const redisClient = redis.createClient({
-  url: process.env.REDIS_URL
-});
+const redisClient = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
 
 (async () => {
   await redisClient.connect();
