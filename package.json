@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "devStart": "nodemon server.js"
+    "devStart": "nodemon server.js",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,7 @@
     "node-blob": "^0.0.2",
     "pdfjs": "^2.4.7",
     "redis": "^4.0.0-rc.4",
+    "serve": "^14.0.1",
     "util": "^0.12.4",
     "uuid": "^8.3.2"
   },
