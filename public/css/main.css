@@ -160,7 +160,6 @@ img{
 .nav-link:hover{
     /* rem instead of % since parent has no right margin (% is linked to parent margin rem insn't) */
     margin: 1% 1rem !important;
-    font-style:italic;
     width: fit-content;
     background-color: rgb(5, 86, 248);
     border-radius: 15px;
