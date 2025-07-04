@@ -25,7 +25,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       const page = parseInt(req.query.page as string) || 1;
       const limit = Math.min(parseInt(req.query.limit as string) || 10, 50); // Max 50 per page
       const search = req.query.search as string;
-      const sortBy = req.query.sortBy as string || 'uploadDate';
+      const sortBy = req.query.sortBy as string || 'createdAt';
       const sortOrder = (req.query.sortOrder as string) === 'asc' ? 'asc' : 'desc';
 
       let query;
@@ -264,42 +264,6 @@ router.delete("/:id", checkAuth, async (req: Request, res: Response, next: NextF
          success: true,
          message: "Document deleted successfully"
       });
-   } catch (error) {
-      next(error);
-   }
-});
-
-// GET /api/documents/:id/ - Download document
-router.get("/:id/download", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-   try {
-      const document = await Document.findById(req.params.id);
-
-      if (!document) {
-         res.status(404).json({
-            success: false,
-            message: "Document not found"
-         });
-         return;
-      }
-
-      // Check if document is public or user owns it
-      const { userId } = getAuth(req);
-      const isOwner = userId === document.authorId;
-      if (!document.isPublic && !isOwner) {
-         res.status(403).json({
-            success: false,
-            message: "Access denied"
-         });
-         return;
-      }
-
-      // Increment download count
-      await Document.findByIdAndUpdate(req.params.id, {
-         $inc: { downloadCount: 1 }
-      });
-
-      // Redirect to S3 URL for download
-      res.redirect(document.fileUrl);
    } catch (error) {
       next(error);
    }

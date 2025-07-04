@@ -33,7 +33,7 @@ export default function DocumentsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("uploadDate");
+  const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Debounce search input to avoid too many API calls
@@ -72,7 +72,7 @@ export default function DocumentsPage() {
       <div className="flex flex-col gap-6">
         {/* Header */}
         <div className="flex flex-col gap-4">
-          <h1 className="text-3xl font-bold">All Documents</h1>
+          <h1 className="text-3xl font-bold">Documents</h1>
           <p className="text-muted-foreground">
             Browse through our collection of publicly available documents
           </p>
@@ -97,9 +97,8 @@ export default function DocumentsPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="uploadDate">Upload Date</SelectItem>
+                <SelectItem value="createdAt">Upload Date</SelectItem>
                 <SelectItem value="title">Title</SelectItem>
-                <SelectItem value="downloadCount">Downloads</SelectItem>
                 <SelectItem value="fileSize">File Size</SelectItem>
               </SelectContent>
             </Select>

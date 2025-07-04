@@ -7,7 +7,7 @@ import {Upload, FileText, Users, Globe, ArrowRight} from "lucide-react";
 export default async function Hero() {
   const response = await getDocuments({
     limit: 8,
-    sortBy: "uploadDate",
+    sortBy: "createdAt",
     sortOrder: "desc",
   });
 

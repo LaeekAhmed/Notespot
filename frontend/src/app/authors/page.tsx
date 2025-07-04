@@ -95,7 +95,7 @@ export default function AuthorsPage() {
       <div className="flex flex-col gap-6">
         {/* Header */}
         <div className="flex flex-col gap-4">
-          <h1 className="text-3xl font-bold">All Authors</h1>
+          <h1 className="text-3xl font-bold">Authors</h1>
           <p className="text-muted-foreground">
             Discover and explore documents from our community of authors
           </p>

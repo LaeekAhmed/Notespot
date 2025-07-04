@@ -10,7 +10,7 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import {Home, Search, User, Upload, BookMarked, Menu, X, Users, FileText} from "lucide-react";
+import {Home, Search, Upload, Menu, X, Users, FileText, Box} from "lucide-react";
 
 export default function Navbar() {
   const {user} = useUser();
@@ -35,7 +35,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2" prefetch={false}>
-            <BookMarked className="w-6 h-6" />
+            <Box className="w-6 h-6" />
             <span className="text-lg font-medium">Notespot</span>
           </Link>
         </div>
@@ -164,19 +164,6 @@ export default function Navbar() {
                   Upload
                 </Link>
               </SignedIn>
-              <SignedOut>
-                <div className="px-4 py-3">
-                  <SignInButton mode="modal">
-                    <Button
-                      size="sm"
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Sign In
-                    </Button>
-                  </SignInButton>
-                </div>
-              </SignedOut>
             </div>
           </nav>
         </div>

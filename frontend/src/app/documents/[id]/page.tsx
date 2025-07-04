@@ -8,18 +8,15 @@ import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {
-  Download,
   File,
   Calendar,
-  User,
-  Eye,
   Edit,
   Trash,
-  Save,
   X,
   Lock,
   Globe,
   Check,
+  Box,
 } from "lucide-react";
 import {
   getDocumentById,
@@ -302,14 +299,10 @@ export default function DocumentPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      <span>Uploaded {formatDate(document.uploadDate)}</span>
+                      <span>Uploaded {formatDate(document.createdAt)}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Download className="w-4 h-4" />
-                      <span>{document.downloadCount} downloads</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
+                      <Box className="w-4 h-4" />
                       <span>{document.formattedSize}</span>
                     </div>
                   </div>
@@ -371,13 +364,9 @@ export default function DocumentPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Downloads:</span>
-                  <span className="font-medium">{document.downloadCount}</span>
-                </div>
-                <div className="flex justify-between">
                   <span className="text-muted-foreground">Uploaded:</span>
                   <span className="font-medium">
-                    {formatDate(document.uploadDate)}
+                    {formatDate(document.createdAt)}
                   </span>
                 </div>
                 <div className="flex justify-between">

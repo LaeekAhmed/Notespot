@@ -2,7 +2,6 @@ export interface Document {
    _id: string;
    title: string;
    description?: string;
-   uploadDate: string;
    fileSize: number;
    fileName: string;
    fileUrl: string;

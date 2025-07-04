@@ -208,10 +208,6 @@ export default function DocumentCard({
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium">{document.formattedSize}</span>
-              <div className="flex items-center gap-1">
-                <Download className="w-3 h-3" />
-                <span>{document.downloadCount}</span>
-              </div>
             </div>
           </div>
         </div>

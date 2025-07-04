@@ -72,13 +72,6 @@ mongoose.connection
    .once("open", () => console.log("Database connected!\n"))
    .on("error", (err: Error) => console.log("Connection failed!"));
 
-// todo (homepage/dashboard if user is logged in)
-app.get("/", (req: Request, res: Response) => {
-   res.json({
-      success: true,
-   });
-});
-
 // Health check endpoint
 app.get("/api/health", (req: Request, res: Response) => {
    res.json({
