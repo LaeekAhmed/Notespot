@@ -8,7 +8,7 @@ import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
-import {Search, File, Upload} from "lucide-react";
+import {Search, File, Upload, User} from "lucide-react";
 import {getDocumentsByAuthor} from "@/lib/api";
 import {Document, Author, AuthorDocumentsResponse} from "@/lib/data";
 import DocumentCard from "@/components/document-card";
@@ -79,7 +79,13 @@ export default function AuthorPage() {
           {/* Author Header */}
           <div className="flex items-center gap-6 mb-8">
             <Avatar className="w-20 h-20">
-              <AvatarImage src={author.imageUrl || "/placeholder-user.jpg"} />
+              {author.imageUrl ? (
+                <AvatarImage src={author.imageUrl} />
+              ) : (
+                <span className="w-full h-full flex items-center justify-center bg-muted rounded-full">
+                  <User className="w-10 h-10 text-muted-foreground" />
+                </span>
+              )}
             </Avatar>
             <div>
               <h1 className="text-3xl font-bold mb-2">

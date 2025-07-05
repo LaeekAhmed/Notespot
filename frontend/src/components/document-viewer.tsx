@@ -61,12 +61,12 @@ export default function DocumentViewer({
   const renderViewer = () => {
     if (error) {
       return (
-        <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg">
-          <File className="w-16 h-16 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="flex flex-col items-center justify-center h-64 bg-muted rounded-lg">
+          <File className="w-16 h-16 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium text-card-foreground mb-2">
             Preview not available
           </h3>
-          <p className="text-gray-500 text-center mb-4">
+          <p className="text-muted-foreground text-center mb-4">
             This document type cannot be previewed in the browser.
           </p>
           {showDownloadButton && (
@@ -82,7 +82,7 @@ export default function DocumentViewer({
     // Image files
     if (isImage(fileExtension)) {
       return (
-        <div className="relative bg-gray-50 rounded-lg overflow-hidden">
+        <div className="relative bg-muted rounded-lg overflow-hidden">
           <Image
             src={document.fileUrl}
             alt={document.title}
@@ -93,8 +93,8 @@ export default function DocumentViewer({
             onLoad={() => setLoading(false)}
           />
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-              <div className="animate-pulse text-gray-500">
+            <div className="absolute inset-0 flex items-center justify-center bg-background">
+              <div className="animate-pulse text-muted-foreground">
                 Loading image...
               </div>
             </div>
@@ -106,7 +106,7 @@ export default function DocumentViewer({
     // PDF files
     if (isPDF(fileExtension)) {
       return (
-        <div className="bg-gray-50 rounded-lg overflow-hidden">
+        <div className="bg-muted rounded-lg overflow-hidden">
           <iframe
             src={`${document.fileUrl}#toolbar=1&navpanes=1&scrollbar=1`}
             className="w-full h-[600px] border-0"
@@ -115,8 +115,8 @@ export default function DocumentViewer({
             onLoad={() => setLoading(false)}
           />
           {loading && (
-            <div className="flex items-center justify-center h-[600px] bg-gray-100">
-              <div className="animate-pulse text-gray-500">Loading PDF...</div>
+            <div className="flex items-center justify-center h-[600px] bg-background">
+              <div className="animate-pulse text-muted-foreground">Loading PDF...</div>
             </div>
           )}
         </div>
@@ -126,7 +126,7 @@ export default function DocumentViewer({
     // Video files
     if (isVideo(fileExtension)) {
       return (
-        <div className="bg-gray-50 rounded-lg overflow-hidden">
+        <div className="bg-muted rounded-lg overflow-hidden">
           <video
             src={document.fileUrl}
             controls
@@ -137,8 +137,8 @@ export default function DocumentViewer({
             Your browser does not support the video tag.
           </video>
           {loading && (
-            <div className="flex items-center justify-center h-64 bg-gray-100">
-              <div className="animate-pulse text-gray-500">
+            <div className="flex items-center justify-center h-64 bg-background">
+              <div className="animate-pulse text-muted-foreground">
                 Loading video...
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function DocumentViewer({
     // Audio files
     if (isAudio(fileExtension)) {
       return (
-        <div className="bg-gray-50 rounded-lg p-8 text-center">
+        <div className="bg-muted rounded-lg p-8 text-center">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-blue-600"
@@ -169,7 +169,7 @@ export default function DocumentViewer({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Audio File</h3>
+          <h3 className="text-lg font-medium text-card-foreground mb-4">Audio File</h3>
           <audio
             src={document.fileUrl}
             controls
@@ -186,7 +186,7 @@ export default function DocumentViewer({
     // Text files
     if (isText(fileExtension)) {
       return (
-        <div className="bg-gray-50 rounded-lg overflow-hidden">
+        <div className="bg-muted rounded-lg overflow-hidden">
           <iframe
             src={document.fileUrl}
             className="w-full h-[600px] border-0"
@@ -195,8 +195,8 @@ export default function DocumentViewer({
             onLoad={() => setLoading(false)}
           />
           {loading && (
-            <div className="flex items-center justify-center h-[600px] bg-gray-100">
-              <div className="animate-pulse text-gray-500">
+            <div className="flex items-center justify-center h-[600px] bg-background">
+              <div className="animate-pulse text-muted-foreground">
                 Loading document...
               </div>
             </div>
@@ -208,14 +208,14 @@ export default function DocumentViewer({
     // Office documents (Word, PowerPoint, Excel)
     if (isOfficeDoc(fileExtension)) {
       return (
-        <div className="bg-gray-50 rounded-lg p-8 text-center">
+        <div className="bg-muted rounded-lg p-8 text-center">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <File className="w-8 h-8 text-blue-600" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-card-foreground mb-2">
             Office Document
           </h3>
-          <p className="text-gray-500 mb-6">
+          <p className="text-muted-foreground mb-6">
             {fileExtension.toUpperCase()} files cannot be previewed directly in
             the browser.
           </p>
@@ -247,12 +247,12 @@ export default function DocumentViewer({
 
     // Fallback for unknown file types
     return (
-      <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg">
-        <File className="w-16 h-16 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
+      <div className="flex flex-col items-center justify-center h-64 bg-muted rounded-lg">
+        <File className="w-16 h-16 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-medium text-card-foreground mb-2">
           Unknown file type
         </h3>
-        <p className="text-gray-500 text-center mb-4">
+        <p className="text-muted-foreground text-center mb-4">
           This file type (.{fileExtension}) is not supported for preview.
         </p>
         {showDownloadButton && (
@@ -267,12 +267,12 @@ export default function DocumentViewer({
 
   return (
     <div className={`border rounded-lg overflow-hidden ${className}`}>
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
+      <div className="bg-card border-b px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <File className="w-5 h-5 text-gray-500" />
+          <File className="w-5 h-5 text-muted-foreground" />
           <div>
-            <h3 className="font-medium text-gray-900">{document.fileName}</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="font-medium text-card-foreground">{document.fileName}</h3>
+            <p className="text-sm text-muted-foreground">
               {document.formattedSize} • {fileExtension.toUpperCase()}
             </p>
           </div>

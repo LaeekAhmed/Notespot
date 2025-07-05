@@ -208,10 +208,10 @@ export default function UploadPage() {
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   dragActive
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950"
                     : file
-                    ? "border-green-500 bg-green-50"
-                    : "border-gray-200 hover:border-gray-400"
+                    ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900 dark:text-green-200"
+                    : "border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
