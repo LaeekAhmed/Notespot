@@ -35,8 +35,8 @@ jobs:
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v21
       with:
-        aws_access_key: ${{ secrets.AWS_GH_SECRET_ACCESS_KEY }}
-        aws_secret_key: ${{ secrets.AWS_GH_ACCESS_KEY }}
+        aws_access_key: ${{ secrets.AWS_GH_ACCESS_KEY }}
+        aws_secret_key: ${{ secrets.AWS_GH_SECRET_ACCESS_KEY }}
         application_name: Notespot
         environment_name: Notespot-env
         region: us-east-2
