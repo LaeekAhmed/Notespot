@@ -1,6 +1,7 @@
+import "./config/env";
+import { env } from "./config/env";
 import express, { Request, Response, NextFunction, Application } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import compression from "compression";
 import methodOverride from "method-override";
@@ -10,16 +11,11 @@ import documentsRouter from "./routes/api/documents";
 import authorsRouter from "./routes/api/authors";
 import { checkAuth } from "./utils/auth";
 
-// Load environment variables from .env file
-if (process.env.NODE_ENV !== "production") {
-   dotenv.config();
-}
-
 const app: Application = express();
 
 // CORS configuration
 app.use(cors({
-   origin: process.env.FRONTEND_URL || "http://localhost:3000",
+   origin: env.FRONTEND_URL,
    credentials: true
 }));
 
@@ -67,7 +63,7 @@ app.use(
 
 // Database connection
 mongoose.set("strictQuery", false);
-mongoose.connect(process.env.DATABASE_URL!);
+mongoose.connect(env.DATABASE_URL);
 mongoose.connection
    .once("open", () => console.log("Database connected!\n"))
    .on("error", (err: Error) => console.log("Connection failed!"));
@@ -129,12 +125,12 @@ app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
    res.status(status).json({
       success: false,
       error: message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+      ...(env.NODE_ENV === 'development' && { stack: err.stack })
    });
 });
 
 // Start server
-const PORT: string = process.env.PORT || "2000";
+const PORT: number = env.PORT;
 app.listen(PORT, () => {
-   console.log(`\nServer is running at http://localhost:${PORT} (Environment: ${process.env.NODE_ENV})`);
+   console.log(`\nServer is running at http://localhost:${PORT} (Environment: ${env.NODE_ENV})`);
 }); 

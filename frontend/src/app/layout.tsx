@@ -1,6 +1,5 @@
 import {ClerkProvider} from "@clerk/nextjs";
-import type {Metadata} from "next";
-import {Geist, Geist_Mono, Inter} from "next/font/google";
+import {Geist, Geist_Mono} from "next/font/google";
 import {cn} from "@/lib/utils";
 import "./globals.css";
 import Navbar from "@/components/navbar";

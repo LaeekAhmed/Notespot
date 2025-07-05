@@ -1,9 +1,9 @@
-import { S3 } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { readFile } from "node:fs/promises";
+import { S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { clerkClient } from "@clerk/express";
-import Document, { IDocument } from "../models/document";
+import Document from "../models/document";
+import { env } from "../config/env";
 
 export interface PaginationOptions {
    page: number;
@@ -26,44 +26,39 @@ export interface PaginationResult<T> {
 
 // S3 Helper Class with encapsulated client
 export class S3Helper {
-   private s3: S3;
+   private s3: S3Client;
    private bucketName: string;
 
    constructor(bucketName: string = "note-spot") {
       this.bucketName = bucketName;
-      this.s3 = new S3({
+      this.s3 = new S3Client({
          credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY!,
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+            accessKeyId: env.S3_ACCESS_KEY,
+            secretAccessKey: env.S3_SECRET_ACCESS_KEY,
          },
-         region: process.env.S3_BUCKET_REGION!,
+         region: env.S3_BUCKET_REGION,
       });
-   }
-
-   async uploadFile(
-      filePath: string,
-      fileName: string,
-      mimeType: string
-   ): Promise<string> {
-      const params = {
-         Bucket: this.bucketName,
-         Body: await readFile(filePath),
-         Key: fileName,
-         ContentType: mimeType,
-      };
-
-      const uploadedFile = await new Upload({
-         client: this.s3,
-         params,
-      }).done();
-
-      return uploadedFile.Location!;
    }
 
    async deleteFile(fileName: string): Promise<void> {
       const params = { Bucket: this.bucketName, Key: fileName };
       const command = new DeleteObjectCommand(params);
       await this.s3.send(command);
+   }
+
+   async generatePresignedUrl(fileName: string, fileType: string, expiresIn: number = 3600): Promise<string> {
+      const command = new PutObjectCommand({
+         Bucket: this.bucketName,
+         Key: fileName,
+         ContentType: fileType,
+      });
+
+      // @ts-ignore - Known type issue with AWS SDK v3
+      return await getSignedUrl(this.s3, command, { expiresIn });
+   }
+
+   getFileUrl(fileName: string): string {
+      return `https://${this.bucketName}.s3.${env.S3_BUCKET_REGION}.amazonaws.com/${fileName}`;
    }
 }
 

@@ -1,0 +1,43 @@
+name: Deploy Backend to Elastic Beanstalk
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm install
+
+    - name: Build project
+      working-directory: ./backend
+      run: npm run build
+
+    - name: Zip backend project
+      working-directory: ./backend
+      run: zip -r app.zip . -x '*.git*' 'node_modules/*' 'dist/*' 'test/*' '*.github/*' '*.env'
+
+    - name: Deploy to Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v21
+      with:
+        aws_access_key: ${{ secrets.AWS_GH_SECRET_ACCESS_KEY }}
+        aws_secret_key: ${{ secrets.AWS_GH_ACCESS_KEY }}
+        application_name: Notespot
+        environment_name: Notespot-env
+        region: us-east-2
+        version_label: ${{ github.sha }}
+        deployment_package: backend/app.zip

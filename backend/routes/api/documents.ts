@@ -12,8 +12,6 @@ import {
    PaginationOptions
 } from "../../utils/helpers";
 import { checkAuth } from "../../utils/auth";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const router: Router = express.Router();
 
@@ -65,29 +63,16 @@ router.post("/presigned", async (req: Request, res: Response, next: NextFunction
       const fileExtension = fileName.split('.').pop();
       const uniqueFileName = `${uuidv4()}.${fileExtension}`;
 
-      const s3Client = new S3Client({
-         credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY!,
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-         },
-         region: process.env.S3_BUCKET_REGION!,
-      });
-
-      const command = new PutObjectCommand({
-         Bucket: "note-spot",
-         Key: uniqueFileName,
-         ContentType: fileType,
-      });
-
-      // @ts-ignore - Known type issue with AWS SDK v3
-      const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+      // Use S3Helper to generate presigned URL
+      const presignedUrl = await s3Helper.generatePresignedUrl(uniqueFileName, fileType);
+      const fileUrl = s3Helper.getFileUrl(uniqueFileName);
 
       res.json({
          success: true,
          data: {
-         presignedUrl,
+            presignedUrl,
             fileName: uniqueFileName,
-            fileUrl: `https://note-spot.s3.${process.env.S3_BUCKET_REGION}.amazonaws.com/${uniqueFileName}`
+            fileUrl
          }
       });
    } catch (error) {

@@ -1,0 +1,43 @@
+{
+   "version": "0.2.0",
+   "configurations": [
+      {
+         "name": "Debug Backend",
+         "type": "node",
+         "request": "launch",
+         "program": "${workspaceFolder}/index.ts",
+         "runtimeExecutable": "tsx",
+         "runtimeArgs": [
+            "--inspect=2000"
+         ],
+         "env": {
+            "NODE_ENV": "development"
+         },
+         "console": "integratedTerminal",
+         "internalConsoleOptions": "neverOpen",
+         "skipFiles": [
+            "<node_internals>/**",
+            "node_modules/**"
+         ],
+         "sourceMaps": true,
+         "restart": true,
+         "resolveSourceMapLocations": [
+            "${workspaceFolder}/**",
+            "!**/node_modules/**"
+         ]
+      },
+      {
+         "name": "Attach to Process",
+         "type": "node",
+         "request": "attach",
+         "port": 2000,
+         "restart": true,
+         "localRoot": "${workspaceFolder}",
+         "remoteRoot": "${workspaceFolder}",
+         "skipFiles": [
+            "<node_internals>/**",
+            "node_modules/**"
+         ]
+      }
+   ]
+}
