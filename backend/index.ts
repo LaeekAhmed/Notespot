@@ -69,7 +69,7 @@ mongoose.connection
    .on("error", (err: Error) => console.log("Connection failed!"));
 
 // Health check endpoint
-app.get("/api/health", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
    res.json({
       success: true,
       message: "NoteSpot API is healthy",
