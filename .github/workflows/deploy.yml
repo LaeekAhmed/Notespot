@@ -20,8 +20,8 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /home/ubuntu/notespot/backend
-          source ~/.profile
-          source ~/.bashrc
+          source ~/.nvm/nvm.sh
+          nvm use node
           git pull origin main
           npm ci
           npm run build
