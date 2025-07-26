@@ -1,6 +1,6 @@
 import { Document, APIResponse, PaginationResponse, AuthorDocumentsResponse, Author } from "@/lib/data";
 
-const API_BASE_URL = process.env.BACKEND_API_URL || "http://localhost:2000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5000";
 
 // Documents API functions
 export async function getDocuments(params?: {
