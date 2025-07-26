@@ -27,260 +27,81 @@ pnpm dev
 bun dev
 ```
 
-## API Endpoints
+### Deploying to EC2
 
-```
-GET /                           - Recently uploaded documents
-GET /health                     - Health check
-GET /api/documents              - All public documents (main feed)
-POST /api/documents             - Upload document
-GET /api/documents/:id          - Get specific document
-GET /api/documents/author/:id   - Get specific author's documents
-PUT /api/documents/:id          - Update document
-DELETE /api/documents/:id       - Delete document
-GET /api/documents/:id/download - Download document
+1. Create a new EC2 (Ubuntu) instance with a login key pair
+
+2. SSH into the instance using the private key file for the login key pair from above
+
+```bash
+ssh -i <path-to-private-key-file> <username>@<public-dns-name>
 ```
 
-## Base URL
+3. Install Node.js and PM2
 
-```
-Development: http://localhost:2000
-Production: [Your production URL]
-```
+https://nodejs.org/en/download
 
-## Authentication
+```bash
+# Update the package list and upgrade the system
+sudo apt-get update
+sudo apt-get upgrade -y
 
-The API uses Clerk for authentication. Include the Clerk session token in the Authorization header:
+# Download and install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
-```
-Authorization: Bearer <clerk_session_token>
-```
+# instead of restarting the shell to use nvm, run the following command
+\. "$HOME/.nvm/nvm.sh"
 
-for more information, see https://clerk.com/docs/testing/postman-or-insomnia
+# Download and install Node.js :
+nvm install 22
 
-## API Endpoints
+# Verify the Node.js version:
+node -v # Should print "v22.17.1".
+nvm current # Should print "v22.17.1".
 
-### Health Check
+# Verify npm version:
+npm -v # Should print "10.9.2".
 
-```http
-GET /health
-```
+# Install PM2 globally:
+npm install -g pm2
 
-**Response:**
+# Configure PM2 to start on system boot
+pm2 startup
 
-```json
-{
-  "success": true,
-  "message": "NoteSpot API is healthy",
-  "timestamp": "2024-01-01T00:00:00.000Z"
-}
-```
+# run the command which appears after running the above command
 
-### Documents
+# Start the server
+pm2 start dist/index.js --name notespot-backend
 
-#### Get All Public Documents
-
-```http
-GET /api/documents
+# save the current PM2 process list
+pm2 save
 ```
 
-**Description:** Returns all public documents sorted by recency with pagination. This is the main feed/index page.
+3. Clone the repository
 
-**Query Parameters:**
-
-- `page` (number, optional): Page number (default: 1)
-- `limit` (number, optional): Items per page (default: 10, max: 50)
-- `search` (string, optional): Search term for title/description
-- `sortBy` (string, optional): Sort field (default: 'createdAt')
-- `sortOrder` (string, optional): 'asc' or 'desc' (default: 'desc')
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "_id": "document_id",
-      "title": "Document Title",
-      "description": "Document description",
-      "fileSize": 1024000,
-      "fileName": "document.pdf",
-      "fileUrl": "https://s3.amazonaws.com/...",
-      "authorId": "clerk_user_id",
-      "authorName": "John Doe",
-      "mimeType": "application/pdf",
-      "downloadCount": 5,
-      "formattedSize": "1.02 MB",
-      "createdAt": "2024-01-01T00:00:00.000Z",
-      "updatedAt": "2024-01-01T00:00:00.000Z"
-    }
-  ],
-  "pagination": {
-    "currentPage": 1,
-    "totalPages": 5,
-    "totalItems": 50,
-    "hasNext": true,
-    "hasPrev": false,
-    "limit": 10
-  }
-}
+```bash
+git clone https://github.com/LaeekAhmed/Notespot.git
+mv Notespot notespot-backend
+cd notespot-backend
+git pull origin main
 ```
 
-#### Get Documents by Author
+4. Install dependencies
 
-```http
-GET /api/documents/author/:authorId
+```bash
+npm ci
 ```
 
-**Description:** Get all documents by a specific author. If viewing your own profile (authorId matches your user ID), shows both public and private documents. If viewing someone else's profile, only shows public documents.
+5. Build the project
 
-**Parameters:**
-
-- `authorId` (string): Clerk user ID of the author
-
-**Query Parameters:**
-
-- `page` (number, optional): Page number (default: 1)
-- `limit` (number, optional): Items per page (default: 10, max: 50)
-- `search` (string, optional): Search term for title/description
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "author": {
-    "id": "clerk_user_id",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "imageUrl": "https://..."
-  },
-  "isOwnProfile": true,
-  "data": [...],
-  "pagination": {...}
-}
+```bash
+npm run build
 ```
 
-#### Upload Document
+6. Restart the server with PM2 if not already running
 
-```http
-POST /api/documents
+```bash
+pm2 restart notespot-backend || pm2 start dist/index.js --name notespot-backend 
 ```
 
-**Authentication:** Required
-**Content-Type:** `multipart/form-data`
 
-**Form Data:**
-
-- `file` (file): The document file
-- `title` (string): Document title
-- `description` (string, optional): Document description
-- `isPublic` (boolean, optional): Whether document is public (default: true)
-
-**Supported File Types:**
-
-- PDF (.pdf)
-- Word Documents (.doc, .docx)
-- PowerPoint (.ppt, .pptx)
-- Text files (.txt)
-
-**Max File Size:** 100MB
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "message": "Document uploaded successfully",
-  "data": {
-    "_id": "document_id",
-    "title": "Document Title"
-    // ... other document fields
-  }
-}
-```
-
-#### Get Specific Document
-
-```http
-GET /api/documents/:id
-```
-
-**Parameters:**
-
-- `id` (string): Document ID
-
-**Authentication:** Required for private documents
-
-#### Update Document
-
-```http
-PUT /api/documents/:id
-```
-
-**Authentication:** Required (owner only)
-**Content-Type:** `application/json`
-
-**Body:**
-
-```json
-{
-  "title": "Updated Title",
-  "description": "Updated description",
-  "isPublic": false
-}
-```
-
-#### Delete Document
-
-```http
-DELETE /api/documents/:id
-```
-
-**Authentication:** Required (owner only)
-
-## Error Responses
-
-All error responses follow this format:
-
-```json
-{
-  "success": false,
-  "error": "Error message"
-}
-```
-
-**Common HTTP Status Codes:**
-
-- `400` - Bad Request (validation errors, missing fields)
-- `401` - Unauthorized (missing or invalid authentication)
-- `403` - Forbidden (insufficient permissions)
-- `404` - Not Found (resource doesn't exist)
-- `500` - Internal Server Error
-
-## Data Models
-
-### Document
-
-```typescript
-interface IDocument {
-  _id: string;
-  title: string;
-  description?: string;
-  filePath: string;
-  fileSize: number;
-  fileName: string;
-  fileUrl: string;
-  uuid: string;
-  authorId: string; // Clerk user ID
-  authorName: string;
-  coverImage?: string;
-  mimeType: string;
-  isPublic: boolean;
-  downloadCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-  formattedSize: string; // Virtual field
-}
-```

@@ -1,4 +1,4 @@
-name: Deploy Backend to Elastic Beanstalk
+name: Deploy Backend to EC2
 
 on:
   push:
@@ -12,20 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Zip backend project
-      working-directory: ./backend
-      run: zip -r app.zip . -x '*.git*' '.vscode/*' 'node_modules/*' 'dist/*' 'test/*' '*.github/*' '*.env'
-
-    - name: Deploy to Elastic Beanstalk
-      uses: einaregilsson/beanstalk-deploy@v21
+    - name: Build and Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
       with:
-        aws_access_key: ${{ secrets.AWS_GH_ACCESS_KEY }}
-        aws_secret_key: ${{ secrets.AWS_GH_SECRET_ACCESS_KEY }}
-        application_name: Notespot
-        environment_name: Notespot-env
-        region: us-east-2
-        version_label: ${{ github.sha }}
-        deployment_package: backend/app.zip
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /home/ubuntu/notespot/backend
+          git pull origin main
+          npm ci
+          npm run build
+          pm2 restart notespot-backend || pm2 start dist/index.js --name notespot-backend 
