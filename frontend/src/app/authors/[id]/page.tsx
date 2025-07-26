@@ -1,6 +1,6 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {useParams, useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {useAuth} from "@clerk/nextjs";
@@ -39,11 +39,7 @@ export default function AuthorPage() {
   const authorId = params.id as string;
   const currentPage = parseInt(searchParams.get("page") || "1");
 
-  useEffect(() => {
-    fetchAuthorDocuments();
-  }, [authorId, currentPage, debouncedSearch]);
-
-  const fetchAuthorDocuments = async () => {
+  const fetchAuthorDocuments = useCallback(async () => {
     try {
       setLoading(true);
       const token = await getToken();
@@ -70,7 +66,11 @@ export default function AuthorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authorId, currentPage, debouncedSearch, getToken, author, isOwnProfile]);
+
+  useEffect(() => {
+    fetchAuthorDocuments();
+  }, [fetchAuthorDocuments]);
 
   return (
     author && (
@@ -148,7 +148,7 @@ export default function AuthorPage() {
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-muted-foreground">
                     Showing {documents.length} of {pagination.totalItems}{" "}
-                    documents for "{debouncedSearch}"
+                    documents for &quot;{debouncedSearch}&quot;
                   </p>
                 </div>
               )}

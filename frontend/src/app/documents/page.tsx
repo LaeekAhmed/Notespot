@@ -1,6 +1,6 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback, Suspense} from "react";
 import Link from "next/link";
 import {useSearchParams} from "next/navigation";
 import {Button} from "@/components/ui/button";
@@ -19,7 +19,7 @@ import DocumentCard from "@/components/document-card";
 import {useDebounce} from "@/hooks/useDebounce";
 import { useAuth } from "@clerk/nextjs";
 
-export default function DocumentsPage() {
+function DocumentsContent() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [pagination, setPagination] = useState<
     PaginationResponse<Document>["pagination"]
@@ -43,11 +43,7 @@ export default function DocumentsPage() {
   const currentPage = parseInt(searchParams.get("page") || "1");
   const {getToken} = useAuth();
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [currentPage, debouncedSearch, sortBy, sortOrder, getToken]);
-
-  const fetchDocuments = async () => {
+  const fetchDocuments = useCallback(async () => {
     try {
       setLoading(true);
       const token = await getToken();
@@ -65,7 +61,11 @@ export default function DocumentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, debouncedSearch, sortBy, sortOrder, getToken]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -201,5 +201,28 @@ export default function DocumentsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function DocumentsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-3xl font-bold">Documents</h1>
+            <p className="text-muted-foreground">
+              Browse through our collection of publicly available documents
+            </p>
+          </div>
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto"></div>
+            <p className="text-muted-foreground mt-4">Loading documents...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <DocumentsContent />
+    </Suspense>
   );
 }

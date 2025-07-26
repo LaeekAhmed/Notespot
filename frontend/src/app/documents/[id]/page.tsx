@@ -1,6 +1,6 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {useParams, useRouter} from "next/navigation";
 import Link from "next/link";
 import {useAuth} from "@clerk/nextjs";
@@ -51,28 +51,7 @@ export default function DocumentPage() {
   const documentId = params.id as string;
   const isOwner = document && userId === document.authorId;
 
-  useEffect(() => {
-    fetchDocument();
-  }, [documentId]);
-
-  useEffect(() => {
-    if (document?.authorId) {
-      const fetchAuthor = async () => {
-        try {
-          const token = await getToken();
-          const response = await getAuthorById(document.authorId, token || undefined);
-          if (response.success && response.data) {
-            setAuthor(response.data);
-          }
-        } catch (error) {
-          console.error("Failed to fetch author:", error);
-        }
-      };
-      fetchAuthor();
-    }
-  }, [document?.authorId]);
-
-  const fetchDocument = async () => {
+  const fetchDocument = useCallback(async () => {
     try {
       setLoading(true);
       const token = await getToken();
@@ -96,7 +75,28 @@ export default function DocumentPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [documentId, getToken, router]);
+
+  useEffect(() => {
+    fetchDocument();
+  }, [fetchDocument]);
+
+  useEffect(() => {
+    if (document?.authorId) {
+      const fetchAuthor = async () => {
+        try {
+          const token = await getToken();
+          const response = await getAuthorById(document.authorId, token || undefined);
+          if (response.success && response.data) {
+            setAuthor(response.data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch author:", error);
+        }
+      };
+      fetchAuthor();
+    }
+  }, [document?.authorId, getToken]);
 
   const handleSave = async () => {
     if (!document || !isOwner) return;
@@ -187,7 +187,7 @@ export default function DocumentPage() {
           <File className="w-16 h-16 mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold mb-2">Document not found</h1>
           <p className="text-muted-foreground mb-6">
-            The document you're looking for doesn't exist or you don't have
+            The document you&apos;re looking for doesn&apos;t exist or you don&apos;t have
             permission to view it.
           </p>
           <Link href="/documents">
