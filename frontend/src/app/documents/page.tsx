@@ -35,6 +35,7 @@ function DocumentsContent() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [error, setError] = useState<string | null>(null);
 
   // Debounce search input to avoid too many API calls
   const debouncedSearch = useDebounce(search, 500);
@@ -46,6 +47,7 @@ function DocumentsContent() {
   const fetchDocuments = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = await getToken();
       const response = await getDocuments({
         page: currentPage,
@@ -58,6 +60,7 @@ function DocumentsContent() {
       setPagination(response.pagination);
     } catch (error) {
       console.error("Failed to fetch documents:", error);
+      setError("Failed to load documents");
     } finally {
       setLoading(false);
     }
@@ -115,8 +118,23 @@ function DocumentsContent() {
           </div>
         )}
 
+        {/* Error state */}
+        {error && !loading && (
+          <div className="text-center py-12">
+            <File className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium mb-2">Failed to load documents</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <button
+              onClick={() => fetchDocuments()}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
         {/* Documents Grid */}
-        {loading ? (
+        {!error && (loading ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {Array.from({length: 8}).map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -198,7 +216,7 @@ function DocumentsContent() {
               </Button>
             )}
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

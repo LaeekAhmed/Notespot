@@ -32,6 +32,7 @@ export default function AuthorPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Debounce search input to avoid too many API calls
   const debouncedSearch = useDebounce(search, 500);
@@ -42,6 +43,7 @@ export default function AuthorPage() {
   const fetchAuthorDocuments = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = await getToken();
       const response: AuthorDocumentsResponse = await getDocumentsByAuthor(
         authorId,
@@ -63,6 +65,7 @@ export default function AuthorPage() {
       setPagination(response.pagination);
     } catch (error) {
       console.error("Failed to fetch author documents:", error);
+      setError("Failed to load author documents");
     } finally {
       setLoading(false);
     }
@@ -71,6 +74,24 @@ export default function AuthorPage() {
   useEffect(() => {
     fetchAuthorDocuments();
   }, [fetchAuthorDocuments]);
+
+  if (error && !loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto text-center">
+          <File className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Failed to load author</h1>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <button
+            onClick={() => fetchAuthorDocuments()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     author && (
