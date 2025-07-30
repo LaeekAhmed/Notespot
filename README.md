@@ -11,5 +11,6 @@
 - **Database**: Metadata and related information is stored in **MongoDB Atlas**, enabling efficient data management and fast querying.
 
 
-<img width="732" height="447" alt="image" src="https://github.com/user-attachments/assets/676afd6e-dc33-4ad0-9e46-984f7884c065" />
+<img width="785" height="480" alt="image" src="https://github.com/user-attachments/assets/6b97bc96-e216-4547-ad3c-e3829d50ce1d" />
+
 
