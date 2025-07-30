@@ -200,7 +200,7 @@ export default function AuthorsPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Users className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                <UserX className="w-16 h-16 mx-auto text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium mb-2">No authors found</h3>
                 <p className="text-muted-foreground">
                   {debouncedSearch 
