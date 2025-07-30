@@ -81,7 +81,7 @@ export default function DocumentCard({
   };
 
   const getFileTypeColor = (extension: string | null) => {
-    if (!extension) return "text-muted-foreground";
+    if (!extension) return "text-gray-500";
 
     const imageTypes = ["jpg", "jpeg", "png", "gif", "svg", "webp", "bmp"];
     const videoTypes = ["mp4", "webm", "avi", "mov", "wmv", "flv", "mkv"];
@@ -95,7 +95,7 @@ export default function DocumentCard({
     if (["ppt", "pptx"].includes(extension)) return "text-orange-500";
     if (["doc", "docx"].includes(extension)) return "text-blue-600";
 
-    return "text-muted-foreground";
+    return "text-gray-500";
   };
 
   const canShowPreview = (extension: string | null): boolean => {
@@ -117,9 +117,9 @@ export default function DocumentCard({
   const fileTypeColor = getFileTypeColor(extension);
 
   return (
-    <Card className={`hover:shadow-md transition-shadow ${className} bg-card border border-border`}>
+    <Card className={`hover:shadow-md transition-shadow ${className}`}>
       <CardContent className="flex flex-col gap-2 p-4">
-        <div className="relative aspect-video rounded-md bg-muted flex items-center justify-center overflow-hidden">
+        <div className="relative aspect-video rounded-md bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
           {document.coverImage || canShowPreview(extension) ? (
             <div className="relative w-full h-full">
               <Image
@@ -164,7 +164,7 @@ export default function DocumentCard({
           <div className="absolute bottom-2 left-2">
             <Badge
               variant="outline"
-              className="text-xs bg-card text-card-foreground backdrop-blur-sm"
+              className="text-xs bg-white/90 backdrop-blur-sm"
             >
               {extension?.toUpperCase() || "FILE"}
             </Badge>
@@ -174,7 +174,7 @@ export default function DocumentCard({
         <div className="flex flex-col gap-1">
           <Link
             href={`/documents/${document._id}`}
-            className="text-lg font-medium hover:underline line-clamp-2 leading-tight text-card-foreground"
+            className="text-lg font-medium hover:underline line-clamp-2 leading-tight"
             prefetch={false}
           >
             {document.title}
@@ -193,7 +193,7 @@ export default function DocumentCard({
               </span>
               <Link
                 href={`/authors/${document.authorId}`}
-                className="hover:underline truncate text-muted-foreground"
+                className="hover:underline truncate"
                 prefetch={false}
               >
                 {document.authorName}
@@ -202,7 +202,7 @@ export default function DocumentCard({
           )}
 
           {/* File info footer */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 pt-2 border-t border-border">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mt-2 pt-2 border-t">
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               <span>{formatDate(document.createdAt)}</span>

@@ -21,10 +21,10 @@ export default async function Hero() {
               {/* Main heading with enhanced styling */}
               <div className="space-y-6">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <FileText className="w-6 h-6 text-blue-600 dark:text-blue-300" />
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <FileText className="w-6 h-6 text-blue-600" />
                   </div>
-                  <span className="text-sm font-medium text-blue-600 dark:text-blue-300 bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">
+                  <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
                     Document Sharing Platform
                   </span>
                 </div>
@@ -59,27 +59,27 @@ export default async function Hero() {
 
               {/* Feature highlights */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
-                <div className="flex flex-col items-center gap-3 p-6 bg-card backdrop-blur-sm rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <div className="flex flex-col items-center gap-3 p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-3 bg-blue-100 rounded-lg">
                     <Upload className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h3 className="font-semibold text-card-foreground">Easy Upload</h3>
+                  <h3 className="font-semibold text-gray-900">Easy Upload</h3>
                   <p className="text-sm text-muted-foreground text-center">Simple drag & drop or click to upload your documents</p>
                 </div>
                 
-                <div className="flex flex-col items-center gap-3 p-6 bg-card backdrop-blur-sm rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <div className="flex flex-col items-center gap-3 p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-3 bg-purple-100 rounded-lg">
                     <Globe className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h3 className="font-semibold text-card-foreground">Global Access</h3>
+                  <h3 className="font-semibold text-gray-900">Global Access</h3>
                   <p className="text-sm text-muted-foreground text-center">Share with anyone, anywhere in the world</p>
                 </div>
                 
-                <div className="flex flex-col items-center gap-3 p-6 bg-card backdrop-blur-sm rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow">
-                  <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                <div className="flex flex-col items-center gap-3 p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-3 bg-green-100 rounded-lg">
                     <Users className="w-6 h-6 text-green-600" />
                   </div>
-                  <h3 className="font-semibold text-card-foreground">Community</h3>
+                  <h3 className="font-semibold text-gray-900">Community</h3>
                   <p className="text-sm text-muted-foreground text-center">Join thousands of users sharing knowledge</p>
                 </div>
               </div>
@@ -88,7 +88,7 @@ export default async function Hero() {
         </section>
 
         {/* Recently Uploaded Documents Section */}
-        <section className="w-full py-16 md:py-24 bg-background">
+        <section className="w-full py-16 md:py-24 bg-white/80">
           <div className="container mx-auto grid gap-8 px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">

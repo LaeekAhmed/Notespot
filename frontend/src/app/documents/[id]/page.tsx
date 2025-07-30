@@ -241,7 +241,7 @@ export default function DocumentPage() {
                     <Button
                       variant="outline"
                       onClick={() => setEditing(false)}
-                      className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:text-red-400"
+                      className="border-red-500 text-red-600 hover:bg-red-50"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Cancel
@@ -275,7 +275,7 @@ export default function DocumentPage() {
                           variant="outline"
                           size="sm"
                           onClick={handleDelete}
-                          className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:text-red-400"
+                          className="border-red-500 text-red-600 hover:bg-red-50"
                         >
                           <Trash className="w-4 h-4 mr-2" />
                           Delete
@@ -313,7 +313,7 @@ export default function DocumentPage() {
 
             {/* Document Viewer */}
             {!editing && (
-              <div className="bg-card rounded-lg border border-border">
+              <div className="bg-white rounded-lg border border-gray-200">
                 <DocumentViewer
                   document={document}
                   showDownloadButton={true}
@@ -326,8 +326,8 @@ export default function DocumentPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Author info */}
-            <div className="bg-card border border-border rounded-lg shadow p-6">
-              <h3 className="font-semibold mb-4 text-card-foreground">Author</h3>
+            <div className="bg-white border border-gray-200 rounded-lg shadow p-6">
+              <h3 className="font-semibold mb-4">Author</h3>
               <div className="flex items-center gap-3">
                 <Avatar className="w-12 h-12">
                   {author?.imageUrl ? (
@@ -341,7 +341,7 @@ export default function DocumentPage() {
                 <div>
                   <Link
                     href={`/authors/${document.authorId}`}
-                    className="font-medium hover:underline text-card-foreground"
+                    className="font-medium hover:underline"
                   >
                     {document.authorName}
                   </Link>
@@ -353,26 +353,26 @@ export default function DocumentPage() {
             </div>
 
             {/* Document details */}
-            <div className="bg-card border border-border rounded-lg shadow p-6">
-              <h3 className="font-semibold mb-4 text-card-foreground">Document Details</h3>
+            <div className="bg-white border border-gray-200 rounded-lg shadow p-6">
+              <h3 className="font-semibold mb-4">Document Details</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">File name:</span>
-                  <span className="font-medium text-card-foreground">{document.fileName}</span>
+                  <span className="font-medium">{document.fileName}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">File size:</span>
-                  <span className="font-medium text-card-foreground">{document.formattedSize}</span>
+                  <span className="font-medium">{document.formattedSize}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">File type:</span>
-                  <span className="font-medium text-card-foreground">
+                  <span className="font-medium">
                     {getFileExtension(document.fileName)?.toUpperCase()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Uploaded:</span>
-                  <span className="font-medium text-card-foreground">
+                  <span className="font-medium">
                     {formatDate(document.createdAt)}
                   </span>
                 </div>

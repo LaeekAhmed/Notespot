@@ -11,7 +11,6 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import {Home, Search, Upload, Menu, X, Users, FileText, Box} from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Navbar() {
   const {user} = useUser();
@@ -90,7 +89,6 @@ export default function Navbar() {
 
           {/* Auth Section */}
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <SignedOut>
               <SignInButton mode="modal">
                 <Button

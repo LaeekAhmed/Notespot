@@ -5,7 +5,6 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import {Toaster} from "sonner";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,25 +23,20 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en">
         <body
           className={cn(
             geistSans.variable,
             geistMono.variable,
-            "antialiased flex flex-col min-h-screen relative overflow-x-hidden"
+            "antialiased flex flex-col min-h-screen relative overflow-x-hidden bg-white"
           )}
         >
-          <ThemeProvider
-            defaultTheme="system"
-            storageKey="ui-theme"
-          >
-            <div className="relative z-10 flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-              <Toaster position="top-right" richColors />
-            </div>
-          </ThemeProvider>
+          <div className="relative z-10 flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+            <Toaster position="top-right" richColors theme="light" />
+          </div>
         </body>
       </html>
     </ClerkProvider>
