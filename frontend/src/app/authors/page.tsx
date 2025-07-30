@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Users, User, Calendar } from "lucide-react";
+import { Search, UserX, Calendar } from "lucide-react";
 import { getAllAuthors } from "@/lib/api";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -127,9 +127,8 @@ export default function AuthorsPage() {
         {/* Error state */}
         {error && !loading && (
           <div className="text-center py-12">
-            <Users className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium mb-2">Failed to load authors</h3>
-            <p className="text-muted-foreground mb-4">{error}</p>
+            <UserX className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium mb-2">{error}</h3>
             <button
               onClick={fetchAuthors}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"

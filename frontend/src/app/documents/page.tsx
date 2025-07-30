@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {Search, File} from "lucide-react";
+import {Search, File, FileWarning} from "lucide-react";
 import {getDocuments} from "@/lib/api";
 import {Document, PaginationResponse} from "@/lib/data";
 import DocumentCard from "@/components/document-card";
@@ -121,9 +121,8 @@ function DocumentsContent() {
         {/* Error state */}
         {error && !loading && (
           <div className="text-center py-12">
-            <File className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium mb-2">Failed to load documents</h3>
-            <p className="text-muted-foreground mb-4">{error}</p>
+            <FileWarning className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium mb-2">{error}</h3>
             <button
               onClick={() => fetchDocuments()}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"

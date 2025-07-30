@@ -8,7 +8,7 @@ import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
-import {Search, File, Upload, User} from "lucide-react";
+import {Search, File, Upload, User, FileWarning} from "lucide-react";
 import {getDocumentsByAuthor} from "@/lib/api";
 import {Document, Author, AuthorDocumentsResponse} from "@/lib/data";
 import DocumentCard from "@/components/document-card";
@@ -79,9 +79,8 @@ export default function AuthorPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto text-center">
-          <File className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Failed to load author</h1>
-          <p className="text-muted-foreground mb-6">{error}</p>
+          <FileWarning className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium mb-4">{error}</h3>
           <button
             onClick={() => fetchAuthorDocuments()}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
