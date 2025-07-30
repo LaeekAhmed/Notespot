@@ -15,8 +15,8 @@ const app: Application = express();
 
 // CORS configuration
 app.use(cors({
-   origin: env.FRONTEND_URL,
-   credentials: true
+  origin: true, // Allow all origins
+  credentials: true
 }));
 
 
