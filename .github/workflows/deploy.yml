@@ -25,7 +25,6 @@ jobs:
           source ~/.nvm/nvm.sh
           nvm use node
           git pull origin main
-          rm -rf dist
           npm ci
           npm run build
           pm2 restart notespot || pm2 start dist/index.js --name notespot
