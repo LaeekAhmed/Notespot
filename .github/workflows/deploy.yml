@@ -4,7 +4,8 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'backend/** .github/**'
+      - 'backend/**'
+      - '.github/**'
   workflow_dispatch:
 
 jobs:
