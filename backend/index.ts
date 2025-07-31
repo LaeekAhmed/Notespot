@@ -33,7 +33,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
       const error = res.locals.error;
       const { userId } = getAuth(req);
       console.log(
-         `\n${res.statusCode} ${req.method} ${req.url} - ${duration}ms ${contentLength}b` +
+         `\n${res.statusCode} ${req.method} ${req.originalUrl} - ${duration}ms ${contentLength}b` +
          (error ? `\nError: ${error.message}` : '' +
          (userId ? `\nAuth: ${userId}` : '')
          )
