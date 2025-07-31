@@ -10,7 +10,4 @@
 - **File Storage**: Files are uploaded to **AWS S3**, leveraging the scalability and performance of Amazon’s cloud storage.
 - **Database**: Metadata and related information is stored in **MongoDB Atlas**, enabling efficient data management and fast querying.
 
-
 <img width="785" height="480" alt="image" src="https://github.com/user-attachments/assets/6b97bc96-e216-4547-ad3c-e3829d50ce1d" />
-
-
