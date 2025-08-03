@@ -102,7 +102,7 @@ export default async function Hero() {
             <div className="flex flex-wrap justify-center gap-6">
               {response.data.map((document) => (
                 <DocumentCard
-                  key={document._id}
+                  key={document.shortId}
                   document={document}
                   showAuthor={true}
                   showPrivacyIndicator={false}

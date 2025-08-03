@@ -172,3 +172,37 @@ export const buildSearchQuery = (
 
    return query;
 };
+
+// Generate a short alphanumeric ID (8 characters)
+export function generateShortId(): string {
+   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+   let result = '';
+   for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+   }
+   return result;
+}
+
+// Generate a unique short ID with collision checking
+export async function generateUniqueShortId(): Promise<string> {
+   let shortId: string;
+   let attempts = 0;
+   const maxAttempts = 10;
+   
+   do {
+      shortId = generateShortId();
+      attempts++;
+      
+      // Check if this ID already exists in the database
+      const Document = require('../models/document').default;
+      const existing = await Document.findOne({ shortId });
+      
+      if (!existing) {
+         return shortId;
+      }
+      
+      if (attempts >= maxAttempts) {
+         throw new Error('Failed to generate unique shortId after maximum attempts');
+      }
+   } while (true);
+}

@@ -150,7 +150,7 @@ export default function UploadPage() {
 
       if (response.success && response.data) {
         toast.success("Document uploaded successfully!");
-        router.push(`/documents/${response.data._id}`);
+        router.push(`/documents/${response.data.shortId}`);
       } else {
         toast.error(response.error || "Failed to upload document");
       }

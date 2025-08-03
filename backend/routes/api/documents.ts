@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction, Router } from "express";
 
-import { v4 as uuidv4 } from "uuid";
 import { clerkClient, getAuth } from "@clerk/express";
 import Document from "../../models/document";
 import {
@@ -9,7 +8,8 @@ import {
    paginate,
    getUserFromClerk,
    buildSearchQuery,
-   PaginationOptions
+   PaginationOptions,
+   generateUniqueShortId
 } from "../../utils/helpers";
 import { checkAuth } from "../../utils/auth";
 
@@ -46,9 +46,8 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // POST /api/documents/presigned - Generate pre-signed URL for S3 upload
-router.post("/presigned", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post("/presigned", checkAuth, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
    try {
-      const { userId } = getAuth(req);
       const { fileName, fileType } = req.body;
       
       if (!fileName || !fileType) {
@@ -61,7 +60,7 @@ router.post("/presigned", async (req: Request, res: Response, next: NextFunction
 
       // Generate a unique file name to prevent collisions
       const fileExtension = fileName.split('.').pop();
-      const uniqueFileName = `${uuidv4()}.${fileExtension}`;
+      const uniqueFileName = `${await generateUniqueShortId()}.${fileExtension}`;
 
       // Use S3Helper to generate presigned URL
       const presignedUrl = await s3Helper.generatePresignedUrl(uniqueFileName, fileType);
@@ -106,7 +105,7 @@ router.post("/", checkAuth, async (req: Request, res: Response, next: NextFuncti
          authorId: userId,
          authorName: authorInfo.name,
          isPublic,
-         uuid: uuidv4()
+         shortId: await generateUniqueShortId()
       });
 
       await document.save();
@@ -125,7 +124,7 @@ router.post("/", checkAuth, async (req: Request, res: Response, next: NextFuncti
 router.get("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
    try {
       const { userId } = getAuth(req);
-      const document = await Document.findById(req.params.id);
+      const document = await Document.findOne({ shortId: req.params.id });
 
       if (!document) {
          res.status(404).json({
@@ -158,7 +157,7 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction): Prom
 router.put("/:id", checkAuth, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
    try {
       const { userId } = getAuth(req);
-      const document = await Document.findById(req.params.id);
+      const document = await Document.findOne({ shortId: req.params.id });
 
       if (!document) {
          res.status(404).json({
@@ -199,7 +198,7 @@ router.put("/:id", checkAuth, async (req: Request, res: Response, next: NextFunc
 router.delete("/:id", checkAuth, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
    try {
       const { userId } = getAuth(req);
-      const document = await Document.findById(req.params.id);
+      const document = await Document.findOne({ shortId: req.params.id });
 
       if (!document) {
          res.status(404).json({
@@ -233,7 +232,7 @@ router.delete("/:id", checkAuth, async (req: Request, res: Response, next: NextF
 
       // Only delete from MongoDB if S3 deletion succeeded
       console.log(`Attempting to delete document ${req.params.id} from MongoDB...`);
-      const deletedDocument = await Document.findByIdAndDelete(req.params.id);
+      const deletedDocument = await Document.findOneAndDelete({ shortId: req.params.id });
 
       if (!deletedDocument) {
          console.error('Document was not found in MongoDB for deletion:', req.params.id);

@@ -106,7 +106,7 @@ export default function DocumentPage() {
       const token = await getToken();
       if (!token) throw new Error("Authentication required");
 
-      const response = await updateDocument(document._id, editForm, token);
+      const response = await updateDocument(document.shortId, editForm, token);
       if (response.success && response.data) {
         setDocument(response.data);
         setEditing(false);
@@ -137,7 +137,7 @@ export default function DocumentPage() {
       const token = await getToken();
       if (!token) throw new Error("Authentication required");
 
-      await deleteDocument(document._id, token);
+      await deleteDocument(document.shortId, token);
       toast.success("Document deleted successfully");
       router.push(`/authors/${document.authorId}`);
     } catch (error) {

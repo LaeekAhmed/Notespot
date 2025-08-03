@@ -6,6 +6,7 @@ export interface Document {
    fileName: string;
    fileUrl: string;
    uuid: string;
+   shortId: string;
    authorId: string; // Clerk user ID
    authorName: string;
    mimeType: string;

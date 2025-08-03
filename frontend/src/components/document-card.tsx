@@ -173,7 +173,7 @@ export default function DocumentCard({
 
         <div className="flex flex-col gap-1">
           <Link
-            href={`/documents/${document._id}`}
+            href={`/documents/${document.shortId}`}
             className="text-lg font-medium hover:underline line-clamp-2 leading-tight"
             prefetch={false}
           >

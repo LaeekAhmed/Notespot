@@ -6,7 +6,7 @@ export interface IDocument extends MongoDocument {
    fileSize: number;
    fileName: string;
    fileUrl: string;
-   uuid: string;
+   shortId: string;
    authorId: string; // Clerk user ID
    authorName: string;
    coverImage?: string; // URL to cover image
@@ -40,7 +40,7 @@ const documentSchema = new Schema<IDocument>({
       type: String,
       required: true
    },
-   uuid: {
+   shortId: {
       type: String,
       required: true,
       unique: true
@@ -75,6 +75,7 @@ documentSchema.index({ authorId: 1 });
 documentSchema.index({ createdAt: -1 });
 documentSchema.index({ isPublic: 1 });
 documentSchema.index({ title: 'text', description: 'text' });
+documentSchema.index({ shortId: 1 }); // Index for shortId lookups
 
 // Virtual to format file size in human readable format
 documentSchema.virtual('formattedSize').get(function () {
