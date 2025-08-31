@@ -48,7 +48,6 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 // POST /api/documents/presigned - Generate pre-signed URL for S3 upload
 router.post("/presigned", checkAuth, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // throw new Error("test error");
     const { fileName, fileType } = req.body;
 
     if (!fileName || !fileType) {
