@@ -33,10 +33,10 @@ export class S3Helper {
       this.bucketName = bucketName;
       this.s3 = new S3Client({
          credentials: {
-            accessKeyId: env.S3_ACCESS_KEY,
-            secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+            accessKeyId: env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
          },
-         region: env.S3_BUCKET_REGION,
+         region: env.AWS_REGION,
       });
    }
 
@@ -58,7 +58,7 @@ export class S3Helper {
    }
 
    getFileUrl(fileName: string): string {
-      return `https://${this.bucketName}.s3.${env.S3_BUCKET_REGION}.amazonaws.com/${fileName}`;
+      return `https://${this.bucketName}.s3.${env.AWS_REGION}.amazonaws.com/${fileName}`;
    }
 }
 

@@ -27,4 +27,4 @@ jobs:
           git pull origin main
           npm ci
           npm run build
-          pm2 restart notespot || pm2 start dist/index.js --name notespot
+          pm2 restart notespot || pm2 start dist/index.js --name notespot --env production

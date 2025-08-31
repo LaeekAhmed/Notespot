@@ -1,4 +1,3 @@
-import "./config/env";
 import { env } from "./config/env";
 import express, { Request, Response, NextFunction, Application } from "express";
 import cors from "cors";
@@ -7,74 +6,122 @@ import compression from "compression";
 import methodOverride from "method-override";
 import mongoose from "mongoose";
 import { clerkMiddleware, getAuth } from "@clerk/express";
+import morgan from "morgan";
 import documentsRouter from "./routes/api/documents";
 import authorsRouter from "./routes/api/authors";
 import { checkAuth } from "./utils/auth";
+import { metricsService } from "./utils/metrics";
+import { logger } from "./utils/logger";
+import os from "os";
 
 const app: Application = express();
 
 // CORS configuration
-app.use(cors({
-  origin: true, // Allow all origins
-  credentials: true
-}));
-
+app.use(
+  cors(
+    {
+      origin: true, // Allow all origins
+      credentials: true
+    })
+);
 
 // Checks the request's cookies and headers for a session JWT and, if found, attaches the Auth object to the request object
 app.use(clerkMiddleware());
 
-// Middleware to log the requested endpoints
+// HTTP logging with Morgan (logs to Winston, which goes to console + CloudWatch)
+app.use(morgan((tokens, req, res) => {
+  const method = tokens.method(req, res);
+  const url = tokens.url(req, res);
+  const status = tokens.status(req, res);
+  const responseTime = tokens['response-time'](req, res);
+  const userId = getAuth(req).userId || 'anonymous';
+
+  // Set log level based on status code
+  const statusCode = parseInt(status || '200');
+
+  if (statusCode >= 500) {
+    // For server errors, include error details if available
+    const errorDetails = (res as any).errorDetails;
+    if (errorDetails) {
+      logger.error(`${method} ${url} ${status} ${responseTime} ms ${userId} \nMessage: ${errorDetails.error} \nStack: ${errorDetails.stack}`);
+    } else {
+      logger.error(`${method} ${url} ${status} ${responseTime} ms ${userId}`);
+    }
+  } else if (statusCode >= 400) {
+    logger.warn(`${method} ${url} ${status} ${responseTime} ms ${userId}`);
+  } else {
+    logger.info(`${method} ${url} ${status} ${responseTime} ms ${userId}`);
+  }
+
+  // Return null to prevent Morgan from printing duplicate message
+  return null;
+}));
+
+// Metrics middleware (separate from logging)
 app.use((req: Request, res: Response, next: NextFunction) => {
-   const start = Date.now();
-   
-   res.on('finish', () => {
-      const duration = Date.now() - start;
-      const contentLength = res.get('content-length') || 0;
-      const error = res.locals.error;
-      const { userId } = getAuth(req);
-      console.log(
-         `\n${res.statusCode} ${req.method} ${req.originalUrl} - ${duration}ms ${contentLength}b` +
-         (error ? `\nError: ${error.message}` : '' +
-         (userId ? `\nAuth: ${userId}` : '')
-         )
-      );
-   });
-   next();
+  const start = Date.now();
+
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+
+    // Record metrics if enabled
+    if (env.CLOUDWATCH_ENABLED) {
+      metricsService.recordRequest(req.method, res.statusCode, duration);
+    }
+  });
+
+  next();
 });
 
 // Middleware to parse JSON and urlencoded bodies
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
 
 // Other middlewares
 app.use(methodOverride("_method"));
 
 // Use compression with options
 app.use(
-   compression({
-      level: 6,
-      threshold: 10 * 1000,
-      filter: (req: Request, res: Response) => {
-         if (req.headers["x-no-compression"]) return false;
-         return compression.filter(req, res);
-      },
-   })
+  compression({
+    level: 6,
+    threshold: 10 * 1000,
+    filter: (req: Request, res: Response) => {
+      if (req.headers["x-no-compression"]) return false;
+      return compression.filter(req, res);
+    },
+  })
 );
 
 // Database connection
 mongoose.set("strictQuery", false);
 mongoose.connect(env.DATABASE_URL);
 mongoose.connection
-   .once("open", () => console.log("Database connected!\n"))
-   .on("error", (err: Error) => console.log("Connection failed!"));
+  .once("open", () => {
+    logger.info("Database connected!");
+  })
+  .on("error", (err: Error) => {
+    logger.error("Database connection failed!", { error: err.message, stack: err.stack });
+  });
 
 // Health check endpoint
-app.get("/", (req: Request, res: Response) => {
-   res.json({
-      success: true,
-      message: "NoteSpot API is healthy",
-      timestamp: new Date().toISOString()
-   });
+app.get("/health", (req: Request, res: Response) => {
+  const uptime = process.uptime();
+  const dbHealthy = mongoose.connection.readyState === 1;
+
+  const healthData = {
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    instanceId: `${os.hostname()}`,
+    uptime: `${Math.floor(uptime / 3600)}h ${Math.floor(
+      (uptime % 3600) / 60
+    )}m`,
+    environment: env.NODE_ENV,
+    database: dbHealthy ? "connected" : "disconnected",
+    nodeVersion: process.version,
+    platform: process.platform,
+  };
+
+  res.json(healthData);
 });
 
 // API routes
@@ -83,54 +130,40 @@ app.use("/api/authors", authorsRouter);
 
 // Protected endpoint example
 app.get("/api/protected", checkAuth, (req: Request, res: Response) => {
-   res.json({
-      success: true,
-      message: "This is a protected endpoint",
-      user: req.auth()
-   });
+  res.json({
+    success: true,
+    message: "This is a protected endpoint",
+    user: req.auth()
+  });
 });
 
-// 404 handler for API routes
-app.use("/api/*", (req: Request, res: Response) => {
-   res.status(404).json({
-      success: false,
-      message: "API endpoint not found"
-   });
+// Catch all invalid endpoints
+app.use("/*", (req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint not found",
+  });
 });
 
+// Global error handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  // Attach error details to response object for Morgan to capture above in the middleware
+  (res as any).errorDetails = {
+    error: err.message,
+    stack: err.stack
+  };
 
-// Global error handling middleware (must be after routes)
-interface CustomError extends Error {
-   status?: number;
-   statusCode?: number;
-}
+  // Handle Clerk authentication errors
+  if (err.message === "Unauthenticated") {
+    res.status(401).json({ success: false, error: "Authentication required" });
+    return;
+  }
 
-app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
-   // Log the full error stack
-   console.error('\nError:', err.message);
-   console.error(err.stack);
-
-   // Handle Clerk authentication errors
-   if (err.message === 'Unauthenticated') {
-      res.status(401).json({
-         success: false,
-         error: 'Authentication required'
-      });
-      return;
-   }
-
-   const status = err.status || err.statusCode || 500;
-   const message = err.message || 'Internal server error';
-
-   res.status(status).json({
-      success: false,
-      error: message,
-      ...(env.NODE_ENV === 'development' && { stack: err.stack })
-   });
+  res.status(500).json({ success: false, error: err.message || "Internal server error", stack: err.stack });
 });
 
 // Start server
 const PORT: number = env.PORT;
 app.listen(PORT, () => {
-   console.log(`\nServer is running at http://localhost:${PORT} (Environment: ${env.NODE_ENV})`);
-}); 
+  logger.info(`Server started`, { port: PORT, environment: env.NODE_ENV });
+});
