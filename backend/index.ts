@@ -25,16 +25,22 @@ app.use(
     })
 );
 
-// Checks the request's cookies and headers for a session JWT and, if found, attaches the Auth object to the request object
-app.use(clerkMiddleware());
-
 // HTTP logging with Morgan (logs to Winston, which goes to console + CloudWatch)
 app.use(morgan((tokens, req, res) => {
   const method = tokens.method(req, res);
   const url = tokens.url(req, res);
   const status = tokens.status(req, res);
   const responseTime = tokens['response-time'](req, res);
-  const userId = getAuth(req).userId || 'anonymous';
+
+  // Safely get userId - only call getAuth if Clerk middleware has been applied
+  let userId = 'anonymous';
+  try {
+    const auth = getAuth(req);
+    userId = auth?.userId || 'anonymous';
+  } catch (error) {
+    // getAuth will throw if Clerk middleware hasn't been applied yet
+    userId = 'anonymous';
+  }
 
   // Set log level based on status code
   const statusCode = parseInt(status || '200');
@@ -104,7 +110,7 @@ mongoose.connection
   });
 
 // Health check endpoint
-app.get("/health", (req: Request, res: Response) => {
+const healthCheck = (req: Request, res: Response) => {
   const uptime = process.uptime();
   const dbHealthy = mongoose.connection.readyState === 1;
 
@@ -122,7 +128,14 @@ app.get("/health", (req: Request, res: Response) => {
   };
 
   res.json(healthData);
-});
+};
+
+app.get("/", healthCheck);
+app.get("/health", healthCheck);
+
+// Checks the request's cookies and headers for a session JWT and, if found, attaches the Auth object to the request object
+// Apply only to API routes that need authentication
+app.use("/api", clerkMiddleware());
 
 // API routes
 app.use("/api/documents", documentsRouter);
@@ -162,8 +175,13 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ success: false, error: err.message || "Internal server error", stack: err.stack });
 });
 
-// Start server
-const PORT: number = env.PORT;
-app.listen(PORT, () => {
-  logger.info(`Server started`, { port: PORT, environment: env.NODE_ENV });
-});
+// Start server (only in non-Lambda environments)
+if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
+  const PORT: number = env.PORT;
+  app.listen(PORT, () => {
+    logger.info(`Server started`, { port: PORT, environment: env.NODE_ENV });
+  });
+}
+
+// Export app for Lambda
+export default app;

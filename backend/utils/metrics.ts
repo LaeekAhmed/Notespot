@@ -5,10 +5,7 @@ import os from 'os';
 // CloudWatch client for metrics
 const cloudwatchClient = new CloudWatchClient({
   region: env.AWS_REGION,
-  credentials: {
-    accessKeyId: env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-  },
+  // access key and secret key are picked up by the AWS SDK from the Lambda IAM role or the local environment
 });
 
 export class MetricsService {
@@ -20,7 +17,7 @@ export class MetricsService {
   private constructor() {
     // Generate unique instance ID
     this.instanceId = `${os.hostname()}`;
-    
+
     // Flush metrics every 60 seconds to minimize API calls
     this.flushInterval = setInterval(() => {
       this.flushMetrics();
@@ -64,7 +61,7 @@ export class MetricsService {
   // Record HTTP request metrics
   recordRequest(method: string, statusCode: number, duration: number) {
     const timestamp = new Date();
-    
+
     // Request count
     this.metricsBuffer.push({
       MetricName: 'RequestCount',

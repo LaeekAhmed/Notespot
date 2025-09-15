@@ -1,0 +1,77 @@
+service: notespot-backend
+
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-2
+  stage: ${opt:stage, 'prod'}
+  memorySize: 512
+  timeout: 29
+  environment:
+    NODE_ENV: production
+    DATABASE_URL: ${env:DATABASE_URL}
+    CLERK_PUBLISHABLE_KEY: ${env:CLERK_PUBLISHABLE_KEY}
+    CLERK_SECRET_KEY: ${env:CLERK_SECRET_KEY}
+    AWS_S3_BUCKET: ${env:AWS_S3_BUCKET}
+    CLOUDWATCH_ENABLED: ${env:CLOUDWATCH_ENABLED, 'false'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+            - s3:PutObjectAcl
+            - s3:GetObjectAcl
+          Resource:
+            - "arn:aws:s3:::${env:AWS_S3_BUCKET}/*"
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+          Resource:
+            - "arn:aws:s3:::${env:AWS_S3_BUCKET}"
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - cloudwatch:PutMetricData
+          Resource: "*"
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+          private: false
+      - http:
+          path: /
+          method: ANY
+          cors: true
+          private: false
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 2001
+    host: 0.0.0.0
+
+package:
+  patterns:
+    - "!node_modules/.cache/**"
+    - "!.env*"
+    - "!*.md"
+    - "!*.yml"
+    - "!*.yaml"
+    - "!migrations/**"
+    - "!src/**"
+    - "!tsconfig.json"
+    - "!tsup.config.*"

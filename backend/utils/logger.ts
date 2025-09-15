@@ -18,7 +18,7 @@ const logger = winston.createLogger({
         winston.format.simple()
       )
     }),
-  ]  
+  ]
 });
 
 // Add CloudWatch transport if enabled
@@ -27,8 +27,7 @@ if (env.CLOUDWATCH_ENABLED) {
     logGroupName: '/aws/notespot/backend',
     logStreamName: `${os.hostname()}-${new Date().toISOString().split('T')[0]}`,
     awsRegion: env.AWS_REGION,
-    awsAccessKeyId: env.AWS_ACCESS_KEY_ID,
-    awsSecretKey: env.AWS_SECRET_ACCESS_KEY,
+    // access key and secret key are picked up by the AWS SDK from the Lambda IAM role or the local environment
     messageFormatter: (item) => {
       return JSON.stringify({
         level: item.level,

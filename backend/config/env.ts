@@ -7,8 +7,8 @@ if (process.env.NODE_ENV !== "production") {
 
 // Validate required environment variables
 const requiredEnvVars = [
-  'AWS_ACCESS_KEY_ID',
-  'AWS_SECRET_ACCESS_KEY',
+  // access key and secret key are picked up by the AWS SDK from the Lambda IAM role or the local environment
+  'AWS_S3_BUCKET',
   'AWS_REGION',
   'DATABASE_URL',
   'CLERK_PUBLISHABLE_KEY',
@@ -23,9 +23,8 @@ if (missingVars.length > 0) {
 
 // Export validated environment variables
 export const env = {
-  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID!,
-  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
-  AWS_REGION: process.env.AWS_REGION!,
+  AWS_S3_BUCKET: process.env.AWS_S3_BUCKET!,
+  AWS_REGION: process.env.AWS_REGION || 'us-east-2',
   DATABASE_URL: process.env.DATABASE_URL!,
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
   PORT: process.env.PORT || 2000,

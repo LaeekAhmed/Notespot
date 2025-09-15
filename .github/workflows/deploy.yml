@@ -1,4 +1,4 @@
-name: Deploy Backend to EC2
+name: Deploy Backend to AWS Lambda
 
 on:
   push:
@@ -13,18 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Build and Deploy to EC2
-      uses: appleboy/ssh-action@v1.0.3
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        # need to source nvm (to load npm and node) since these commands run in a non-interactive shell
-        script: |
-          cd /home/ubuntu/notespot/backend
-          source ~/.nvm/nvm.sh
-          nvm use node
-          git pull origin main
-          npm ci
-          npm run build
-          pm2 restart notespot || pm2 start dist/index.js --name notespot --env production
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: 'backend/package-lock.json'
+
+    - name: Install dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_GH_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_GH_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: Deploy to AWS Lambda
+      working-directory: ./backend
+      run: npm run deploy
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+        CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+        AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+        CLOUDWATCH_ENABLED: ${{ vars.CLOUDWATCH_ENABLED }}
