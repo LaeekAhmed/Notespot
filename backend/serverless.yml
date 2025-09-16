@@ -44,24 +44,18 @@ provider:
 functions:
   api:
     handler: dist/lambda.handler
-    reservedConcurrency: 5
+    reservedConcurrency: 10
     events:
       - http:
           path: /{proxy+}
           method: ANY
           cors: true
           private: false
-          throttling:
-            burstLimit: 100
-            rateLimit: 50
       - http:
           path: /
           method: ANY
           cors: true
           private: false
-          throttling:
-            burstLimit: 100
-            rateLimit: 50
 
 plugins:
   - serverless-offline
