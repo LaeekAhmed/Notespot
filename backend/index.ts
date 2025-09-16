@@ -7,6 +7,7 @@ import methodOverride from "method-override";
 import mongoose from "mongoose";
 import { clerkMiddleware, getAuth } from "@clerk/express";
 import morgan from "morgan";
+import rateLimit from "express-rate-limit";
 import documentsRouter from "./routes/api/documents";
 import authorsRouter from "./routes/api/authors";
 import { checkAuth } from "./utils/auth";
@@ -15,6 +16,21 @@ import { logger } from "./utils/logger";
 import os from "os";
 
 const app: Application = express();
+
+// Rate limiting - 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    error: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all requests
+app.use(limiter);
 
 // CORS configuration
 app.use(

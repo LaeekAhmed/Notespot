@@ -48,12 +48,22 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 // POST /api/documents/presigned - Generate pre-signed URL for S3 upload
 router.post("/presigned", checkAuth, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { fileName, fileType } = req.body;
+    const { fileName, fileType, fileSize } = req.body;
 
-    if (!fileName || !fileType) {
+    if (!fileName || !fileType || !fileSize) {
       res.status(400).json({
         success: false,
-        error: "fileName and fileType are required"
+        error: "fileName, fileType, and fileSize are required"
+      });
+      return;
+    }
+
+    // File size limit: 50MB max
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    if (fileSize > MAX_FILE_SIZE) {
+      res.status(400).json({
+        success: false,
+        error: "File name, type, or size missing or the file size exceeds 50MB limit"
       });
       return;
     }

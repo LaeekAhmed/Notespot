@@ -1,6 +1,7 @@
 # Notespot
 
-**Full-stack file sharing platform** designed for users to upload, download, and publicly share files of various formats (PDFs, docs, images, etc.), built with a focus on learning **scalable cloud infrastructure** and **modern backend development practices**.
+An **over engineered** full-stack file sharing platform and an API server, designed for users to upload, download, and publicly share files of various formats (PDFs, docs, images and more).
+Built with a focus on learning **scalable cloud infrastructure** and **modern backend development practices**.
 
 ### **Architecture Overview**
 
