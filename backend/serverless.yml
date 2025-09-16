@@ -44,7 +44,6 @@ provider:
 functions:
   api:
     handler: dist/lambda.handler
-    reservedConcurrency: 10
     events:
       - http:
           path: /{proxy+}
