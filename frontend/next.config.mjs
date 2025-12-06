@@ -5,19 +5,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-   logging: {
-      fetches: {
-         fullUrl: true,
+  outputFileTracingRoot: __dirname,
+  turbopack: {
+    root: __dirname,
+  },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'note-spot.s3.us-east-2.amazonaws.com',
       },
-   },
-   images: {
-      remotePatterns: [
-         {
-            protocol: 'https',
-            hostname: 'note-spot.s3.us-east-2.amazonaws.com',
-         },
-      ],
-   },
+    ],
+  },
 }
 
 export default nextConfig;
